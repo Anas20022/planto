@@ -1,0 +1,129 @@
+import 'dart:typed_data';
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:image/image.dart' as img;
+
+class TfliteModel {
+  late Interpreter _interpreter;
+  final String modelName;
+  final String modelPath;
+  final List<String> classLabels;
+
+  TfliteModel({
+    required this.modelName,
+    required this.modelPath,
+    required this.classLabels,
+  });
+
+  // Updated to handle the model loading process with error logging
+  Future<void> loadModel() async {
+    try {
+      _interpreter = await Interpreter.fromAsset(modelPath);
+      print("Model loaded successfully.");
+    } catch (e) {
+      print("Error loading model: $e");
+      rethrow;  // Rethrow the error to propagate it
+    }
+  }
+
+  // Preprocess the image: resize and normalize to float32 [0.0, 1.0]
+  List<List<List<List<double>>>> preprocessImage(Uint8List inputData) {
+    img.Image? image = img.decodeImage(inputData);
+    if (image == null) throw Exception("Image decoding failed");
+
+    img.Image resized = img.copyResize(image, width: 150, height: 150);
+
+    List<List<List<List<double>>>> input = List.generate(
+      1,
+          (_) => List.generate(150, (y) => List.generate(150, (x) {
+        final pixel = resized.getPixel(x, y);
+        return [
+          img.getRed(pixel) / 255.0,
+          img.getGreen(pixel) / 255.0,
+          img.getBlue(pixel) / 255.0
+        ];
+      })),
+    );
+
+    return input;
+  }
+
+  // Updated to check if the interpreter is initialized before running the model
+  Future<List?> runModelOnImage(Uint8List inputData) async {
+    if (_interpreter == null) {
+      print("Interpreter is not initialized.");
+      return null;  // Return null if the interpreter is not initialized
+    }
+
+    var output = List.filled(classLabels.length, 0.0).reshape([1, classLabels.length]);
+
+    try {
+      var input = preprocessImage(inputData);
+      _interpreter.run(input, output);
+    } catch (e) {
+      print("Error running model: $e");
+      return null;
+    }
+
+    return output[0]; // Return the class probability list
+  }
+
+  // Dispose method to release resources
+  void dispose() {
+    _interpreter.close();
+    print("Interpreter disposed.");
+  }
+}
+
+class ModelManager {
+  final Map<String, String> modelPaths = {
+    "Apple": "assets/models/Apple_model.tflite",
+    "Cherry": "assets/models/Cherry_model.tflite",
+    "Corn": "assets/models/Corn_model.tflite",
+    "Grape": "assets/models/Grape_model.tflite",
+    "Peach": "assets/models/Peach_model.tflite",
+    "Papper_bell": "assets/models/Papper_bell_model.tflite",
+    "Potato": "assets/models/Potato_model.tflite",
+    "Strawberry": "assets/models/Strawberry_model.tflite",
+    "Tomato": "assets/models/Tomato_model.tflite",
+  };
+
+  final Map<String, List<String>> plantClassLabels = {
+    "Apple": ["Apple Scab", "Black Rot", "Cedar Apple Rust", "Healthy"],
+    "Cherry": ["Powdery Mildew", "Healthy"],
+    "Corn": ["Cercospora Leaf Spot", "Common Rust", "Northern Leaf Blight", "Healthy"],
+    "Grape": ["Black Rot", "Black Measles", "Isariopsis Leaf Spot", "Healthy"],
+    "Peach": ["Bacterial Spot", "Healthy"],
+    "Papper_bell": ["Bacterial Spot", "Healthy"],
+    "Potato": ["Early Blight", "Late Blight", "Healthy"],
+    "Strawberry": ["Leaf Scorch", "Healthy"],
+    "Tomato": ["Bacterial Spot", "Early Blight", "Late Blight", "Leaf Mold", "Septoria Leaf Spot", "Spider Mites", "Target Spot",
+      "Tomato Yellow Leaf Curl Virus", "Tomato Mosaic Virus", "Healthy"],
+
+  };
+
+  TfliteModel? _currentModel;
+
+  // Updated method to handle loading and classification
+  Future<List?> classifyImage(String modelName, Uint8List inputData) async {
+    if (_currentModel != null) {
+      _currentModel!.dispose();  // Ensure previous model is disposed of before loading new one
+    }
+
+    if (!modelPaths.containsKey(modelName)) {
+      throw Exception("Model $modelName not found.");
+    }
+
+    _currentModel = TfliteModel(
+      modelName: modelName,
+      modelPath: modelPaths[modelName]!,
+      classLabels: plantClassLabels[modelName]!,
+    );
+
+    // Load the model and handle errors
+    await _currentModel!.loadModel();
+
+    // Run the model on the image and return the output
+    return await _currentModel!.runModelOnImage(inputData);
+  }
+}
+

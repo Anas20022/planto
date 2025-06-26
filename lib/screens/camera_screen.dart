@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:camera/camera.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import '../common/image_picker.dart';
@@ -82,9 +81,10 @@ class _CameraScreenState extends State<CameraScreen> {
         ),
       );
 
-      DiseaseProvider.detectDisease(imagePath).then((value) {
-        log("Detected value: $value");
-      });
+      // DiseaseProvider.detectDisease(imagePath).then((value) {
+      //   log("Detected value: $value");
+      // });
+
     } catch (e) {
       log('Error capturing photo: $e');
     }

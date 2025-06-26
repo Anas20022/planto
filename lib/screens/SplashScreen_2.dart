@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:test_project/screens/on_boarding_screen.dart';
+
+import 'on_boarding_screen.dart';
 
 class Splashscreen2 extends StatefulWidget {
-  const Splashscreen2({Key? key}) : super(key: key);
+  const Splashscreen2({super.key});
 
   @override
   State<Splashscreen2> createState() => _SplashScreen2State();

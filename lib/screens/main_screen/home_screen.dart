@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -6,36 +5,32 @@ import 'package:provider/provider.dart';
 import '../../common/image_picker.dart';
 import '../../components/menu_item.dart';
 import '../../model/plant.dart';
-import '../../providers/bottom_nav_provider.dart';
 import '../../providers/disease_provider.dart';
 import '../../providers/plant_selection_provider.dart';
 import '../../providers/tip_provider.dart';
-import 'archive_screen.dart';
 import '../camera_screen.dart';
-import '../feedback_screen.dart';
 
 class HomeScreen extends StatelessWidget {
 
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
 
     final List<Plant> vegetables = [
-      Plant(name: "corn", imagePath: 'assets/image/corn.png'),
-      Plant(name: "Pepper", imagePath: 'assets/image/pepper.png'),
-      Plant(name: "potato", imagePath: 'assets/image/potato.png'),
-      Plant(name: "tomato", imagePath: 'assets/image/tomato.png'),
+      Plant(name: "Corn", imagePath: 'assets/image/corn.png'), // كان "corn"
+      Plant(name: "Papper_bell", imagePath: 'assets/image/pepper.png'), // كان "Pepper"
+      Plant(name: "Potato", imagePath: 'assets/image/potato.png'), // كان "potato"
+      Plant(name: "Tomato", imagePath: 'assets/image/tomato.png'), // كان "tomato"
     ];
 
     final List<Plant> fruits = [
       Plant(name: "Apple", imagePath: 'assets/image/apple.png'),
-      Plant(name: "Banana", imagePath: 'assets/image/banana.png'),
+      Plant(name: "Banana", imagePath: 'assets/image/banana.png'), // هذا النبات ليس له نموذج حاليا
       Plant(name: "Cherry", imagePath: 'assets/image/cherry.png'),
       Plant(name: "Peach", imagePath: 'assets/image/peach.png'),
-      Plant(name: "strawberry", imagePath: 'assets/image/strawberry.png'),
+      Plant(name: "Strawberry", imagePath: 'assets/image/strawberry.png'), // كان "strawberry"
     ];
-
     return SafeArea(
       child: Scaffold(
         body: Padding(
@@ -131,50 +126,50 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildSwitchIcon(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: ElevatedButton(
-        onPressed: () {
-          context.read<DiseaseProvider>().toggleServer();
-        },
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          backgroundColor: const Color(0xFF438853),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-        ),
-        child: Selector<DiseaseProvider, bool>(
-          selector: (_, provider) => provider.offline,
-          builder: (_, offline, __) => Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                offline ? Icons.cloud_off_rounded : Icons.cloud_outlined,
-                color: Colors.white,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                offline ? "Offline" : "Cloud",
-                style: const TextStyle(color: Colors.white),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Padding buildHeading() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20, bottom: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [],
-      ),
-    );
-  }
+  // Widget buildSwitchIcon(BuildContext context) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 20),
+  //     child: ElevatedButton(
+  //       onPressed: () {
+  //         context.read<DiseaseProvider>().toggleServer();
+  //       },
+  //       style: ElevatedButton.styleFrom(
+  //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+  //         backgroundColor: const Color(0xFF438853),
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(15),
+  //         ),
+  //       ),
+  //       child: Selector<DiseaseProvider, bool>(
+  //         selector: (_, provider) => provider.offline,
+  //         builder: (_, offline, __) => Row(
+  //           mainAxisSize: MainAxisSize.min,
+  //           children: [
+  //             Icon(
+  //               offline ? Icons.cloud_off_rounded : Icons.cloud_outlined,
+  //               color: Colors.white,
+  //             ),
+  //             const SizedBox(width: 10),
+  //             Text(
+  //               offline ? "Offline" : "Cloud",
+  //               style: const TextStyle(color: Colors.white),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
+  //
+  // Padding buildHeading() {
+  //   return Padding(
+  //     padding: const EdgeInsets.only(top: 20, bottom: 20),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [],
+  //     ),
+  //   );
+  // }
 
   SizedBox buildMenu1(BuildContext context) {
     return SizedBox(

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'main_screen/home_screen.dart';
 import '../main_screens.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();

@@ -1,15 +1,14 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:test_project/screens/main_screen/archive_screen.dart';
+import 'package:test_1/screens/main_screen/archive_screen.dart';
 
 import 'providers/bottom_nav_provider.dart';
-import 'screens/feedback_screen.dart';
 import 'screens/main_screen/home_screen.dart';
 import 'screens/main_screen/settings_screen.dart';
 
 class MainScreen extends StatelessWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class MainScreen extends StatelessWidget {
         builder: (context, bottomNavProvider, child) {
           return IndexedStack(
             index: bottomNavProvider.selectedIndex,
-            children: const [
+            children:  [
               ArchiveScreen(),
               HomeScreen(),
               SettingsScreen(),

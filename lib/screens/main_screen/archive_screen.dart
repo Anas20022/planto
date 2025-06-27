@@ -1,26 +1,30 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:provider/provider.dart'; // *** جديد: لاستخدام Provider
+import 'package:provider/provider.dart';
 
-import '../../providers/fetch_fertilizer.dart';
-import '../../providers/disease_provider.dart'; // *** جديد: لاستخدام DiseaseProvider
+import '../../model/fetch_fertilizer_model.dart';
+import '../../providers/disease_provider.dart';
 
 class ArchiveScreen extends StatelessWidget {
   const ArchiveScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final diseaseProvider = Provider.of<DiseaseProvider>(context, listen: false);
+    if (diseaseProvider.archivedResults == null) {
+      diseaseProvider.loadArchivedResults();
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Archive"), // عنوان أوضح
-        backgroundColor: Color(0xFF508776),
+        title: const Text("Archive"),
+        backgroundColor: const Color(0xFF508776),
       ),
-      body: SingleChildScrollView( // *** مهم: لجعل المحتوى قابلاً للتمرير
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, // لجعل النصوص تبدأ من اليسار
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- قسم عرض آخر نتيجة تحليل نبات ---
+            // --- قسم التحاليل المؤرشفة ---
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -28,53 +32,98 @@ class ArchiveScreen extends StatelessWidget {
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: FutureBuilder<Map<String, dynamic>?>(
-                    // *** جديد: جلب آخر نتيجة تحليل من DiseaseProvider
-                    future: context.read<DiseaseProvider>().getLastAnalysisResult(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                  child: Consumer<DiseaseProvider>(
+                    builder: (context, diseaseProvider, _) {
+                      final results = diseaseProvider.archivedResults;
+
+                      if (results == null) {
                         return const Center(child: CircularProgressIndicator());
-                      } else if (snapshot.hasError) {
-                        log('Error loading last analysis result: ${snapshot.error}');
-                        return Center(child: Text('Error loading analysis: ${snapshot.error}'));
-                      } else if (snapshot.hasData && snapshot.data != null) {
-                        final result = snapshot.data!;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              "Last Plant Analysis:",
-                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
-                            ),
-                            const SizedBox(height: 10),
-                            Text("Plant: ${result['plantName']}", style: const TextStyle(fontSize: 16)),
-                            // عرض اسم المرض مع لون مناسب
-                            Text(
-                              "Disease: ${result['diseaseName']}",
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: result['diseaseName'].toString().toLowerCase().contains("healthy")
-                                    ? Colors.green // إذا كانت النتيجة صحية
-                                    : Colors.red, // إذا كان هناك مرض
-                              ),
-                            ),
-                            Text(
-                              "Analyzed On: ${DateTime.parse(result['timestamp']).toLocal().toShortDateString()}",
-                              style: const TextStyle(fontSize: 14, color: Colors.grey),
-                            ),
-                          ],
-                        );
+                      } else if (results.isEmpty) {
+                        return const Center(child: Text("No archived analyses found.", style: TextStyle(fontSize: 16)));
                       } else {
-                        // لا توجد نتائج سابقة
-                        return const Center(
-                          child: Text("No previous plant analysis found.", style: TextStyle(fontSize: 16)),
+                        return  Column(
+                          children: results.asMap().entries.map((entry) {
+                            final index = entry.key;
+                            final result = entry.value;
+
+                            return Container(
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE8F5E9), // ✅ أخضر فاتح
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: const [
+                                  BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
+                                ],
+                              ),
+                              child: ListTile(
+                                contentPadding: const EdgeInsets.all(12),
+                                title: Text(
+                                  "🌱 Plant: ${result['plantName']}",
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "🦠 Disease: ${result['diseaseName']}",
+                                      style: TextStyle(
+                                        color: result['diseaseName'].toString().toLowerCase().contains("healthy")
+                                            ? Colors.green
+                                            : Colors.red,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "📅 Date: ${_parseTimestamp(result['timestamp'])}",
+                                      style: const TextStyle(color: Colors.grey),
+                                    ),
+                                    if (result.containsKey('link') && result['link'].toString().isNotEmpty)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 6),
+                                        child: GestureDetector(
+                                          onTap: () async {
+                                            final url = Uri.parse(result['link']);
+                                            if (await canLaunchUrl(url)) {
+                                              await launchUrl(url);
+                                            } else {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text("Could not open link.")),
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            "🌐 View More",
+                                            style: TextStyle(color: Colors.blue[700], decoration: TextDecoration.underline),
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.delete_forever, color: Colors.red),
+                                  onPressed: () async {
+                                    await diseaseProvider.deleteArchivedResult(index);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(content: Text("Deleted from archive")),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          }).toList(),
                         );
+
                       }
                     },
                   ),
+
+
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
 
             // --- قسم عرض الأسمدة ---
@@ -92,17 +141,12 @@ class ArchiveScreen extends StatelessWidget {
             FutureBuilder(
               future: Fertilizer.getFertilizers(),
               builder: (_, snapshot) {
-                if (!snapshot.hasData) { // لا تستخدم !(snapshot.hasData) بل !snapshot.hasData
-                  log("Fertilizers snapshot data: ${snapshot.data.toString()}");
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                if (!snapshot.hasData) {
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  log('Error loading fertilizers: ${snapshot.error}');
                   return Center(child: Text('Error loading fertilizers: ${snapshot.error}'));
                 } else {
-                  final fertilizers = snapshot.data!;
-                  // GridView.builder يحتاج إلى shrinkWrap و NeverScrollableScrollPhysics عندما يكون داخل SingleChildScrollView
+                  final fertilizers = (snapshot.data!..shuffle()).take(4).toList();
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -110,13 +154,13 @@ class ArchiveScreen extends StatelessWidget {
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       childAspectRatio: .6,
-                      crossAxisSpacing: 10, // مسافات بين العناصر أفقياً
-                      mainAxisSpacing: 10,  // مسافات بين العناصر عمودياً
+                      crossAxisSpacing: 10,
+                      mainAxisSpacing: 10,
                     ),
                     itemCount: fertilizers.length,
                     itemBuilder: (context, index) {
                       final fertilizer = fertilizers[index];
-                      return buildFertilizerItem(context,fertilizer);
+                      return buildFertilizerItem(context, fertilizer);
                     },
                   );
                 }
@@ -128,25 +172,35 @@ class ArchiveScreen extends StatelessWidget {
     );
   }
 
-  Widget buildFertilizerItem(BuildContext context,Fertilizer fertilizer) {
+  // ✅ دالة لتنسيق التاريخ حسب نوعه (String أو int)
+  static String _parseTimestamp(dynamic timestamp) {
+    try {
+      if (timestamp is String) {
+        return DateTime.parse(timestamp).toLocal().toShortDateString();
+      } else if (timestamp is int) {
+        return DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal().toShortDateString();
+      } else {
+        return "Invalid timestamp";
+      }
+    } catch (e) {
+      return "Error parsing date";
+    }
+  }
+
+  Widget buildFertilizerItem(BuildContext context, Fertilizer fertilizer) {
     return GestureDetector(
       onTap: () async {
         final url = Uri.parse(fertilizer.link);
         if (!await launchUrl(url)) {
-          // يمكنك عرض رسالة خطأ هنا للمستخدم
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Could not open link for ${fertilizer.name}")),
           );
-          log('Could not launch $url'); // تسجيل الخطأ
-          // لا ترمي Exception هنا لأنه قد يوقف التطبيق إذا لم يتم التعامل معه
         }
       },
       child: Card(
         elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        margin: const EdgeInsets.all(5), // تقليل الهامش لعدم تكرار padding
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        margin: const EdgeInsets.all(5),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
@@ -154,30 +208,25 @@ class ArchiveScreen extends StatelessWidget {
             children: [
               Text(
                 fertilizer.name,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
-                maxLines: 2, // لمنع تجاوز العنوان
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 5),
               ClipRRect(
-                borderRadius: BorderRadius.circular(15), // زوايا مستديرة للصورة
+                borderRadius: BorderRadius.circular(15),
                 child: Image.network(
                   fertilizer.image,
                   height: 100,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                  // *** جديد: معالج الأخطاء لصور الشبكة ***
                   errorBuilder: (context, error, stackTrace) {
-                    log("Error loading fertilizer image: ${fertilizer.image}, Error: $error");
                     return Container(
                       height: 100,
                       width: double.infinity,
-                      color: Colors.grey[200], // لون خلفية رمادي
-                      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey), // أيقونة صورة مكسورة
+                      color: Colors.grey[200],
+                      child: const Icon(Icons.broken_image, size: 40, color: Colors.grey),
                     );
                   },
                 ),
@@ -185,22 +234,15 @@ class ArchiveScreen extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 fertilizer.description,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
                 textAlign: TextAlign.center,
-                maxLines: 3, // حد أقصى 3 أسطر للوصف
-                overflow: TextOverflow.ellipsis, // إضافة نقاط (...) إذا كان النص أطول
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 5),
               Text(
                 fertilizer.price,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green,
-                ),
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
               ),
             ],
           ),
@@ -210,7 +252,7 @@ class ArchiveScreen extends StatelessWidget {
   }
 }
 
-// *** جديد: إضافة دالة مساعدة لتنسيق التاريخ (يمكن وضعها في ملف utility خاص بك)
+// ✅ امتداد لتنسيق التاريخ
 extension DateTimeExtension on DateTime {
   String toShortDateString() {
     return '${year}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')} ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';

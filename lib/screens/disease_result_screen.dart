@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../common/disease_result_screen.dart';
-import '../providers/disease_model.dart';
+import '../providers/disease_details.dart';
 
 class DiseaseResultScreen extends StatelessWidget {
   // هذه الشاشة ستستقبل كائن DiseaseDetails كاملاً

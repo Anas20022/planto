@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/services.dart' show rootBundle;
 
 class Fertilizer {
@@ -30,13 +29,6 @@ class Fertilizer {
   static Future<List<Fertilizer>> getFertilizers() async {
     String data = await rootBundle.loadString('assets/fertilizers_data.json');
     List<dynamic> dataLoaded = jsonDecode(data);
-    List<Fertilizer> fertilizers = [];
-
-    for (int i = 0; i < dataLoaded.length; i++) {
-      fertilizers.add(
-        Fertilizer.fromJson(dataLoaded[i]),
-      );
-    }
-    return fertilizers;
+    return dataLoaded.map((item) => Fertilizer.fromJson(item)).toList();
   }
 }

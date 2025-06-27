@@ -1,0 +1,24 @@
+{
+  "Leaf Mold": {
+    "remedies": [
+      "Use recommended treatments for leaf mold.",
+      "Remove and dispose of infected leaves showing signs of leaf mold."
+    ],
+    "prevention": [
+      "Practice crop rotation to avoid leaf mold.",
+      "Ensure proper plant spacing to reduce humidity and prevent leaf mold."
+    ],
+    "link": "https://example.com/leaf_mold"
+  },
+  "Early Blight": {
+    "remedies": [
+      "Use recommended treatments for early blight.",
+      "Remove and dispose of infected leaves showing signs of early blight."
+    ],
+    "prevention": [
+      "Practice crop rotation to avoid early blight.",
+      "Ensure proper plant spacing to reduce humidity and prevent early blight."
+    ],
+    "link": "https://example.com/early_blight"
+  }
+}

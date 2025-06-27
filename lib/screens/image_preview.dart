@@ -6,7 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'dart:typed_data'; // إضافة هذا الاستيراد
 
-import '../providers/disease_model.dart';
+import '../providers/disease_details.dart';
 import '../providers/disease_provider.dart';
 import '../providers/plant_selection_provider.dart';
 import '../utils/TfliteModel.dart';

@@ -1,26 +1,65 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io'; // ممكن ما نحتاجها بعد التعديل بس خليها احتياط
+import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 // import 'package:http/http.dart'; // ما بنحتاجها لأي اتصال بالإنترنت
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:connectivity_plus/connectivity_plus.dart'; // ما زلنا نحتاجها لفحص الاتصال فقط
+import 'package:flutter/services.dart' show rootBundle; // لإحضار الملف
 
-import 'disease_model.dart';
+import '../model/fetch_fertilizer_model.dart';
+import 'disease_details.dart';
 import '../utils/TfliteModel.dart'; // ** جديد: لاستخدام runModelTest المحلي **
 
+
+import 'dart:developer' as dev;
+
+
 class DiseaseProvider with ChangeNotifier {
-  // بنشيل onlineServer و offlineServer بما إننا ما بنستخدمش خوادم خارجية
+  bool _offline = false;
+  List<Map<String, dynamic>>? _archivedResults; // ✅ تخزين النتائج المؤرشفة مؤقتًا
+  List<Map<String, dynamic>>? get archivedResults => _archivedResults; // ✅ getter للوصول من الخارج
 
-  bool _offline = false; // رح نستخدمها لتحديد إذا كان في نت ولا لأ
+  bool get offline => _offline;
 
-  bool get offline => _offline; // لسه ممكن تستخدمها في الـ UI
+  Future<void> loadArchivedResults() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> rawList = prefs.getStringList('archived_results') ?? [];
 
-  // بنشيل constructor والدوال اللي بتتعامل مع _offline_state يدويًا
-  // DiseaseProvider() {}
+    _archivedResults = rawList
+        .map((e) => Map<String, dynamic>.from(jsonDecode(e)))
+        .toList();
 
-  // دالة لحفظ آخر نتيجة تحليل
+    notifyListeners(); // ✅ إعلام المستمعين (الواجهة) إنه صار تحديث
+  }
+
+  Future<Map<String, dynamic>> loadDiseaseData(String diseaseName) async {
+    final String jsonString = await rootBundle.loadString('assets/diseases_data.json');
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+
+    if (jsonMap.containsKey(diseaseName)) {
+      return jsonMap[diseaseName];
+    } else {
+      throw Exception("Disease not found in JSON: $diseaseName");
+    }
+  }
+
+  Future<void> deleteArchivedResult(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> results = prefs.getStringList('archived_results') ?? [];
+
+    if (index >= 0 && index < results.length) {
+      results.removeAt(index);
+      await prefs.setStringList('archived_results', results);
+      await loadArchivedResults(); // ✅ إعادة تحميل النتائج بعد الحذف
+    }
+  }
+
+
+
+
   Future<void> saveLastAnalysisResult(String plantName, String diseaseName) async {
     final prefs = await SharedPreferences.getInstance();
     final Map<String, dynamic> lastResult = {
@@ -29,10 +68,9 @@ class DiseaseProvider with ChangeNotifier {
       'timestamp': DateTime.now().toIso8601String(),
     };
     await prefs.setString('lastAnalysisResult', jsonEncode(lastResult));
-    log("Last analysis result saved: $lastResult");
+    dev.log("Last analysis result saved: $lastResult");
   }
 
-  // دالة لجلب آخر نتيجة تحليل
   Future<Map<String, dynamic>?> getLastAnalysisResult() async {
     final prefs = await SharedPreferences.getInstance();
     final String? resultString = prefs.getString('lastAnalysisResult');
@@ -42,63 +80,90 @@ class DiseaseProvider with ChangeNotifier {
     return null;
   }
 
-  // ** التعديل الرئيسي في دالة `detectDisease` **
+  // لتخزين نتيجة مؤرشفة دائمًا
+  Future<void> saveArchivedAnalysisResult(String plantName, String diseaseName) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // ✅ توحيد اسم المفتاح هنا
+    final List<String> archivedList = prefs.getStringList('archived_results') ?? [];
+
+    final Map<String, dynamic> newResult = {
+      'plantName': plantName,
+      'diseaseName': diseaseName,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+
+    archivedList.add(jsonEncode(newResult));
+
+    await prefs.setStringList('archived_results', archivedList); // ✅ نفس الاسم الموحد
+    await loadArchivedResults(); // ✅ تحديث القائمة المحلية داخل الـ provider
+    notifyListeners();
+  }
+
+// لجلب النتيجة المؤرشفة
+  Future<List<Map<String, dynamic>>> getArchivedAnalysisResult() async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> archivedList = prefs.getStringList('archivedResults') ?? [];
+
+    return archivedList.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
+  }
+
+
   Future<DiseaseDetails> detectDisease(String plantName, Uint8List imageBytes) async {
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    log("Connectivity result: $connectivityResult"); // سجل حالة الاتصال
+    final connectivityResult = await Connectivity().checkConnectivity();
+    dev.log("Connectivity result: $connectivityResult");
+
+    // Load all fertilizers and pick 4 random suggestions
+    final allFertilizers = await Fertilizer.getFertilizers();
+    allFertilizers.shuffle(Random());
+    final randomSuggestions = allFertilizers.take(4).toList();
 
     if (connectivityResult == ConnectivityResult.none) {
-      // ** لا يوجد اتصال بالإنترنت (وضع الأوفلاين) **
       _offline = true;
       notifyListeners();
 
-      log("No internet connection. Returning the last saved analysis result.");
+      dev.log("No internet connection. Returning the last saved analysis result.");
       final lastResult = await getLastAnalysisResult();
       if (lastResult != null) {
-        // لو في نتيجة سابقة، بنرجعها
         return DiseaseDetails(
           plantName: lastResult['plantName'],
           diseaseName: lastResult['diseaseName'],
           remedies: ["علاج الأوفلاين: راجع النصائح المحفوظة.", "علاج الأوفلاين: تأكد من أن نبتتك لا تزال موجودة."],
           prevention: ["وقاية الأوفلاين: استشر خبيرًا عندما يتوفر الاتصال."],
-          fertilizer: {"رابط سماد أوفلاين": "https://example.com/offline_fert_link"},
-          // googleSearchLink: "https://www.google.com/search?q=${Uri.encodeComponent('${lastResult['plantName']} ${lastResult['diseaseName']} disease remedies')}",
+          suggestions: randomSuggestions, fertilizer: {},
         );
       } else {
-        // لو مفيش إنترنت ومفيش نتائج سابقة محفوظة
-        log("No internet and no previous analysis saved. Throwing error.");
-        throw Exception("لا يوجد اتصال بالإنترنت ولا توجد نتائج تحليل سابقة محفوظة. يرجى الاتصال بالإنترنت لإجراء أول تحليل.");
+        dev.log("No internet and no previous analysis saved. Throwing error.");
+        throw Exception("لا يوجد اتصال بالإنترنت ولا توجد نتائج تحليل سابقة محفوظة.");
       }
     } else {
-      // ** يوجد اتصال بالإنترنت (لكننا لن نستخدم خادم خارجي، بل النموذج المحلي) **
       _offline = false;
       notifyListeners();
 
-      log("Internet connection detected. Running local TFLite model.");
+      dev.log("Internet connection detected. Running local TFLite model.");
 
       try {
-        // ** هنا بنستخدم runModelTest للتحليل المحلي **
-        // runModelTest بترجع String?، فلازم نحولها لـ DiseaseDetails
         String? detectedDiseaseName = await runModelTest(plantName, imageBytes);
 
         if (detectedDiseaseName != null) {
           await saveLastAnalysisResult(plantName, detectedDiseaseName);
+
+          final diseaseInfo = await loadDiseaseData(detectedDiseaseName); // 🔄 اقرأ من JSON
+
           return DiseaseDetails(
             plantName: plantName,
             diseaseName: detectedDiseaseName,
-            // بنحط علاجات ووقاية وأسمدة افتراضية أو عامة من مكان تاني
-            // لأن النموذج المحلي ما بيوفرش هالمعلومات
-            remedies: ["علاج محلي: قم بإزالة الأوراق المصابة.", "علاج محلي: استخدم مبيد فطري عضوي."],
-            prevention: ["وقاية محلية: حافظ على المسافة بين النباتات.", "وقاية محلية: قم بالري في الصباح الباكر."],
-            fertilizer: {"سماد مقترح": "https://example.com/general_fertilizer"},
-            // googleSearchLink: "https://www.google.com/search?q=${Uri.encodeComponent('$plantName $detectedDiseaseName disease remedies')}",
+            remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
+            prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
+            suggestions: randomSuggestions,
+            fertilizer: {}, // إذا بدنا نضيف روابط لاحقاً من نفس json
           );
         } else {
-          log("Local TFLite model failed to detect disease.");
+          dev.log("Local TFLite model failed to detect disease.");
           throw Exception("فشل التحليل بواسطة النموذج المحلي.");
         }
       } catch (e) {
-        log("Error running local TFLite model: $e");
+        dev.log("Error running local TFLite model: $e");
         throw Exception("حدث خطأ أثناء تشغيل النموذج المحلي: ${e.toString()}");
       }
     }

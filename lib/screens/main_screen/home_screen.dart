@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../common/image_picker.dart';
 import '../../components/menu_item.dart';
-import '../../model/plant.dart';
+import '../../model/plant_model.dart';
 import '../../providers/disease_provider.dart';
 import '../../providers/plant_selection_provider.dart';
 import '../../providers/tip_provider.dart';

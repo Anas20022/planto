@@ -3,6 +3,8 @@ import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image/image.dart' as img;
 import 'dart:developer' as developer;
 
+import '../model/model_result.dart';
+
 
 class TfliteModel {
   late Interpreter _interpreter;
@@ -136,19 +138,19 @@ class ModelManager {
 // ... (باقي الكود) ...
 
 // Run the model and return the top result as a readable string
-Future<String?> runModelTest(String modelName, Uint8List imageBytes) async {
+Future<ModelResult?> runModelTest(String modelName, Uint8List imageBytes) async {
   final modelManager = ModelManager();
 
   if (!modelManager.modelPaths.containsKey(modelName)) {
     developer.log("Model '$modelName' not found.");
-    return null; // <--- هنا نرجع null إذا لم يتم العثور على النموذج
+    return null;
   }
 
   final output = await modelManager.classifyImage(modelName, imageBytes);
 
   if (output == null) {
     developer.log("Model inference failed.");
-    return null; // <--- هنا نرجع null إذا فشل الاستدلال
+    return null;
   }
 
   final labels = modelManager.plantClassLabels[modelName]!;
@@ -159,16 +161,15 @@ Future<String?> runModelTest(String modelName, Uint8List imageBytes) async {
   final sorted = result.entries.toList()
     ..sort((a, b) => b.value.compareTo(a.value));
 
-  // ** إضافة هذا التحقق للتأكد من وجود نتائج قبل الوصول إلى sorted.first **
   if (sorted.isEmpty) {
     developer.log("No classes detected for model '$modelName'.");
-    return null; // <--- نرجع null إذا كانت القائمة فارغة
+    return null;
   }
 
   final topResult = sorted.first;
+
   print("About to log top result from TFLiteModel:");
   print("${topResult.key} (${(topResult.value * 100).toStringAsFixed(2)}%)");
-  print("Logged top result from TFLiteModel.");
 
-  return topResult.key; // <--- **هنا نرجع اسم المرض الفعلي**
+  return ModelResult(topResult.key, topResult.value);
 }

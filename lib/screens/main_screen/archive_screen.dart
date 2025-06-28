@@ -65,15 +65,26 @@ class ArchiveScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     const SizedBox(height: 4),
-                                    Text(
-                                      "🦠 Disease: ${result['diseaseName']}",
-                                      style: TextStyle(
-                                        color: result['diseaseName'].toString().toLowerCase().contains("healthy")
-                                            ? Colors.green
-                                            : Colors.red,
-                                        fontWeight: FontWeight.w500,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Text(
+                                          "🦠 Disease: ${result['diseaseName']}",
+                                          style: TextStyle(
+                                            color: result['diseaseName'].toString().toLowerCase().contains("healthy")
+                                                ? Colors.green
+                                                : Colors.red,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 10),
+                                        if (result.containsKey('accuracy'))
+                                          Text(
+                                            "(${(result['accuracy'] * 100).toStringAsFixed(1)}%)",
+                                            style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                          ),
+                                      ],
                                     ),
+
                                     const SizedBox(height: 4),
                                     Text(
                                       "📅 Date: ${_parseTimestamp(result['timestamp'])}",

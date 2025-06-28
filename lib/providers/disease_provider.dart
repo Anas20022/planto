@@ -1,27 +1,21 @@
 import 'dart:convert';
-import 'dart:developer';
-import 'dart:io'; // ممكن ما نحتاجها بعد التعديل بس خليها احتياط
+import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
-// import 'package:http/http.dart'; // ما بنحتاجها لأي اتصال بالإنترنت
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:connectivity_plus/connectivity_plus.dart'; // ما زلنا نحتاجها لفحص الاتصال فقط
-import 'package:flutter/services.dart' show rootBundle; // لإحضار الملف
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 import '../model/fetch_fertilizer_model.dart';
+import '../model/model_result.dart';
 import 'disease_details.dart';
-import '../utils/TfliteModel.dart'; // ** جديد: لاستخدام runModelTest المحلي **
-
-
-import 'dart:developer' as dev;
-
+import '../utils/TfliteModel.dart';
 
 class DiseaseProvider with ChangeNotifier {
   bool _offline = false;
-  List<Map<String, dynamic>>? _archivedResults; // ✅ تخزين النتائج المؤرشفة مؤقتًا
-  List<Map<String, dynamic>>? get archivedResults => _archivedResults; // ✅ getter للوصول من الخارج
-
+  List<Map<String, dynamic>>? _archivedResults;
+  List<Map<String, dynamic>>? get archivedResults => _archivedResults;
   bool get offline => _offline;
 
   Future<void> loadArchivedResults() async {
@@ -32,7 +26,7 @@ class DiseaseProvider with ChangeNotifier {
         .map((e) => Map<String, dynamic>.from(jsonDecode(e)))
         .toList();
 
-    notifyListeners(); // ✅ إعلام المستمعين (الواجهة) إنه صار تحديث
+    notifyListeners();
   }
 
   Future<Map<String, dynamic>> loadDiseaseData(String diseaseName) async {
@@ -53,23 +47,22 @@ class DiseaseProvider with ChangeNotifier {
     if (index >= 0 && index < results.length) {
       results.removeAt(index);
       await prefs.setStringList('archived_results', results);
-      await loadArchivedResults(); // ✅ إعادة تحميل النتائج بعد الحذف
+      await loadArchivedResults();
     }
   }
 
-
-
-
-  Future<void> saveLastAnalysisResult(String plantName, String diseaseName) async {
+  Future<void> saveLastAnalysisResult(String plantName, String diseaseName, double accuracy) async {
     final prefs = await SharedPreferences.getInstance();
     final Map<String, dynamic> lastResult = {
       'plantName': plantName,
       'diseaseName': diseaseName,
+      'accuracy': accuracy,
       'timestamp': DateTime.now().toIso8601String(),
     };
     await prefs.setString('lastAnalysisResult', jsonEncode(lastResult));
-    dev.log("Last analysis result saved: $lastResult");
+    print("Last analysis result saved: $lastResult");
   }
+
 
   Future<Map<String, dynamic>?> getLastAnalysisResult() async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,27 +73,24 @@ class DiseaseProvider with ChangeNotifier {
     return null;
   }
 
-  // لتخزين نتيجة مؤرشفة دائمًا
-  Future<void> saveArchivedAnalysisResult(String plantName, String diseaseName) async {
+  Future<void> saveArchivedAnalysisResult(String plantName, String diseaseName, double accuracy) async {
     final prefs = await SharedPreferences.getInstance();
-
-    // ✅ توحيد اسم المفتاح هنا
     final List<String> archivedList = prefs.getStringList('archived_results') ?? [];
 
     final Map<String, dynamic> newResult = {
       'plantName': plantName,
       'diseaseName': diseaseName,
+      'accuracy': accuracy,
       'timestamp': DateTime.now().toIso8601String(),
     };
 
     archivedList.add(jsonEncode(newResult));
-
-    await prefs.setStringList('archived_results', archivedList); // ✅ نفس الاسم الموحد
-    await loadArchivedResults(); // ✅ تحديث القائمة المحلية داخل الـ provider
+    await prefs.setStringList('archived_results', archivedList);
+    await loadArchivedResults();
     notifyListeners();
   }
 
-// لجلب النتيجة المؤرشفة
+
   Future<List<Map<String, dynamic>>> getArchivedAnalysisResult() async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> archivedList = prefs.getStringList('archivedResults') ?? [];
@@ -108,12 +98,10 @@ class DiseaseProvider with ChangeNotifier {
     return archivedList.map((e) => jsonDecode(e) as Map<String, dynamic>).toList();
   }
 
-
   Future<DiseaseDetails> detectDisease(String plantName, Uint8List imageBytes) async {
     final connectivityResult = await Connectivity().checkConnectivity();
-    dev.log("Connectivity result: $connectivityResult");
+    print("Connectivity result: $connectivityResult");
 
-    // Load all fertilizers and pick 4 random suggestions
     final allFertilizers = await Fertilizer.getFertilizers();
     allFertilizers.shuffle(Random());
     final randomSuggestions = allFertilizers.take(4).toList();
@@ -122,10 +110,12 @@ class DiseaseProvider with ChangeNotifier {
       _offline = true;
       notifyListeners();
 
-      dev.log("No internet connection. Returning the last saved analysis result.");
+      print("No internet connection. Returning the last saved analysis result.");
       final lastResult = await getLastAnalysisResult();
       if (lastResult != null) {
         return DiseaseDetails(
+          accuracy: lastResult['accuracy'] ?? 0.0, // ✅ أضفناها هنا
+
           plantName: lastResult['plantName'],
           diseaseName: lastResult['diseaseName'],
           remedies: ["علاج الأوفلاين: راجع النصائح المحفوظة.", "علاج الأوفلاين: تأكد من أن نبتتك لا تزال موجودة."],
@@ -133,37 +123,56 @@ class DiseaseProvider with ChangeNotifier {
           suggestions: randomSuggestions, fertilizer: {},
         );
       } else {
-        dev.log("No internet and no previous analysis saved. Throwing error.");
+        print("No internet and no previous analysis saved. Throwing error.");
         throw Exception("لا يوجد اتصال بالإنترنت ولا توجد نتائج تحليل سابقة محفوظة.");
       }
     } else {
       _offline = false;
       notifyListeners();
 
-      dev.log("Internet connection detected. Running local TFLite model.");
+      print("Internet connection detected. Running local TFLite model.");
 
       try {
-        String? detectedDiseaseName = await runModelTest(plantName, imageBytes);
+        ModelResult? result = await runModelTest(plantName, imageBytes);
+        if (result == null) {
+          throw Exception("فشل في التحليل، النموذج لم يرجع نتيجة.");
+        }
+        final String detectedDiseaseName = result.label;
+        final double confidence = result.confidence;
 
-        if (detectedDiseaseName != null) {
-          await saveLastAnalysisResult(plantName, detectedDiseaseName);
-
-          final diseaseInfo = await loadDiseaseData(detectedDiseaseName); // 🔄 اقرأ من JSON
+        // 👇 هنا نتحقق من الدقة
+        if (confidence < 0.80) {
+          await saveLastAnalysisResult(plantName, "Healthy", confidence);
 
           return DiseaseDetails(
             plantName: plantName,
-            diseaseName: detectedDiseaseName,
-            remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
-            prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
-            suggestions: randomSuggestions,
-            fertilizer: {}, // إذا بدنا نضيف روابط لاحقاً من نفس json
+            diseaseName: "Healthy",
+            accuracy: confidence,
+            remedies: [],
+            prevention: [],
+            suggestions: [],
+            fertilizer: {},
           );
-        } else {
-          dev.log("Local TFLite model failed to detect disease.");
-          throw Exception("فشل التحليل بواسطة النموذج المحلي.");
         }
+
+// باقي الكود إذا كانت الدقة عالية
+        await saveLastAnalysisResult(plantName, detectedDiseaseName, confidence);
+        await saveArchivedAnalysisResult(plantName, detectedDiseaseName, confidence);
+
+        final diseaseInfo = await loadDiseaseData(detectedDiseaseName);
+
+        return DiseaseDetails(
+          plantName: plantName,
+          diseaseName: detectedDiseaseName,
+          accuracy: confidence, // 👈 أضيفي هذا في الكائن
+          remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
+          prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
+          suggestions: randomSuggestions,
+          fertilizer: {},
+        );
+
       } catch (e) {
-        dev.log("Error running local TFLite model: $e");
+        print("Error running local TFLite model: $e");
         throw Exception("حدث خطأ أثناء تشغيل النموذج المحلي: ${e.toString()}");
       }
     }

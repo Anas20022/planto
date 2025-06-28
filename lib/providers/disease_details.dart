@@ -10,6 +10,7 @@ class DiseaseDetails with ChangeNotifier {
   final Map<String, String> fertilizer;
   final List<Fertilizer> suggestions; // جديد
   final String? link; // رابط خارجي لمزيد من التفاصيل (اختياري)
+  final double accuracy;
 
   final fertilzerImage = "assets/images/fertilizer.jpg";
 
@@ -21,6 +22,8 @@ class DiseaseDetails with ChangeNotifier {
     required this.fertilizer,
     required this.suggestions,
     this.link, // <<--- تمت الإضافة هنا
+    required this.accuracy, // ✅ أضيفي هذا
+
 
   });
 
@@ -38,6 +41,7 @@ class DiseaseDetails with ChangeNotifier {
       prevention: (json['prevention'] != null) ? json['prevention'].cast<String>() : [],
       fertilizer: (json['fertilizer'] != null) ? json['fertilizer'].cast<String, String>() : {},
       suggestions: [],
+      accuracy: (json['accuracy'] != null) ? json['accuracy'].toDouble() : 0.0, // ✅ مضاف
       link: json['link'], // <<--- تمت الإضافة هنا
     );
   }

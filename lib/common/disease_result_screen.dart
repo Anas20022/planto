@@ -59,6 +59,19 @@ class DiseaseDetailsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 8),
+
+                Text(
+                  "Accuracy: ${(diseaseDetails.accuracy * 100).toStringAsFixed(2)}%",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey,
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
                 const SizedBox(height: 10),
                 if (diseaseDetails.link != null && diseaseDetails.link!.isNotEmpty)
                   GestureDetector(
@@ -94,6 +107,8 @@ class DiseaseDetailsWidget extends StatelessWidget {
                       await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
                         diseaseDetails.plantName,
                         diseaseDetails.diseaseName,
+                        diseaseDetails.accuracy, // 👈 أضيفي هذا السطر
+
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text("✅ تم حفظ هذه النتيجة في الأرشيف")),

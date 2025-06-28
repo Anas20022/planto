@@ -90,15 +90,16 @@ class ModelManager {
   };
 
   final Map<String, List<String>> plantClassLabels = {
-    "Apple": ["Apple Scab", "Black Rot", "Cedar Apple Rust", "Healthy"],
-    "Cherry": ["Powdery Mildew", "Healthy"],
-    "Corn": ["Cercospora Leaf Spot", "Common Rust", "Northern Leaf Blight", "Healthy"],
-    "Grape": ["Black Rot", "Black Measles", "Isariopsis Leaf Spot", "Healthy"],
-    "Peach": ["Bacterial Spot", "Healthy"],
-    "Papper_bell": ["Bacterial Spot", "Healthy"],
-    "Potato": ["Early Blight", "Late Blight", "Healthy"],
-    "Strawberry": ["Leaf Scorch", "Healthy"],
-    "Tomato": ["Bacterial Spot", "Early Blight", "Late Blight", "Leaf Mold", "Septoria Leaf Spot", "Spider Mites", "Target Spot",
+    "Apple": ["Apple Scab", " Apple Black Rot", "Cedar Apple Rust", "Healthy"],
+    "Cherry": ["Cherry Powdery Mildew", "Healthy"],
+    "Corn": ["Corn Cercospora Leaf Spot", "Corn Common Rust", "Corn Northern Leaf Blight", "Healthy"],
+    "Grape": ["Grape Black Rot", "Grape Black Measles", "Grape Isariopsis Leaf Spot", "Healthy"],
+    "Peach": ["Peach Bacterial Spot", "Healthy"],
+    "Papper_bell": ["Papper Bell Bacterial Spot", "Healthy"],
+    "Potato": ["Potato Early Blight", "Potato Late Blight", "Healthy"],
+    "Strawberry": ["Strawberry Leaf Scorch", "Healthy"],
+    "Tomato": ["Tomato Bacterial Spot", "Tomato Early Blight", "Tomato Late Blight", "Tomato Leaf Mold",
+      "Tomato Septoria Leaf Spot", "Tomato Spider Mites", "Tomato Target Spot",
       "Tomato Yellow Leaf Curl Virus", "Tomato Mosaic Virus", "Healthy"],
 
   };

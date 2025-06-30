@@ -81,7 +81,7 @@ class _SplashScreen2State extends State<Splashscreen2> with TickerProviderStateM
     String visibleText = fullText.substring(0, currentLength);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

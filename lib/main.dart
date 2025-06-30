@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:test_1/prefs/mode_theme.dart';
 import 'package:test_1/providers/bottom_nav_provider.dart';
+import 'package:test_1/providers/mode_provider.dart';
 import 'package:test_1/providers/plant_selection_provider.dart';
 import 'package:test_1/providers/tip_provider.dart';
 
@@ -34,7 +36,8 @@ void main() async {
     developer.log("Error loading initial image for runModelTest: $e");
   }
 
-  runApp(const MyApp());
+  runApp(ChangeNotifierProvider(create: (context)=>ModeProvider()..getTheme(),child: MyApp(),));
+
 }
 
 class MyApp extends StatelessWidget {
@@ -49,12 +52,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BottomNavProvider()),
         ChangeNotifierProvider(create: (_) => PlantSelectionProvider()),
         ChangeNotifierProvider(create: (_) => TipProvider()),
+
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
         navigatorKey: navigatorKey,
         debugShowCheckedModeBanner: false,
+        themeAnimationStyle: AnimationStyle(duration: Duration(seconds: 1),curve: Curves.decelerate),
+        theme: Provider.of<ModeProvider>(context).darkModeEnable ? ModeTheme.darkTheme : ModeTheme.lightMode,
         home: Splashscreen2(),
+
       ),
     );
   }

@@ -14,6 +14,7 @@ class Fertilizer {
     required this.description,
     required this.price,
     required this.link,
+
   });
 
   factory Fertilizer.fromJson(Map<String, dynamic> json) {

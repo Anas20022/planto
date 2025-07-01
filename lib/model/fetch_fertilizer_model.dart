@@ -32,5 +32,5 @@ class Fertilizer {
     List<dynamic> dataLoaded = jsonDecode(data);
     return dataLoaded.map((item) => Fertilizer.fromJson(item)).toList();
   }
-//
+
 }

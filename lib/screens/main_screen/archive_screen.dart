@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
@@ -17,14 +17,13 @@ class ArchiveScreen extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Archive"),
+        title: Text("Archive".tr()),
         backgroundColor: const Color(0xFF508776),
       ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // --- قسم التحاليل المؤرشفة ---
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Card(
@@ -39,9 +38,9 @@ class ArchiveScreen extends StatelessWidget {
                       if (results == null) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (results.isEmpty) {
-                        return const Center(child: Text("No archived analyses found.", style: TextStyle(fontSize: 16)));
+                        return Center(child: Text("No archived analyses found.".tr(), style: const TextStyle(fontSize: 16)));
                       } else {
-                        return  Column(
+                        return Column(
                           children: results.asMap().entries.map((entry) {
                             final index = entry.key;
                             final result = entry.value;
@@ -49,7 +48,7 @@ class ArchiveScreen extends StatelessWidget {
                             return Container(
                               margin: const EdgeInsets.symmetric(vertical: 8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFE8F5E9), // ✅ أخضر فاتح
+                                color: const Color(0xFFE8F5E9),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: const [
                                   BoxShadow(color: Colors.black12, blurRadius: 4, offset: Offset(0, 2)),
@@ -84,7 +83,6 @@ class ArchiveScreen extends StatelessWidget {
                                           ),
                                       ],
                                     ),
-
                                     const SizedBox(height: 4),
                                     Text(
                                       "📅 Date: ${_parseTimestamp(result['timestamp'])}",
@@ -100,7 +98,7 @@ class ArchiveScreen extends StatelessWidget {
                                               await launchUrl(url);
                                             } else {
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(content: Text("Could not open link.")),
+                                                SnackBar(content: Text("Could not open link.".tr())),
                                               );
                                             }
                                           },
@@ -117,7 +115,7 @@ class ArchiveScreen extends StatelessWidget {
                                   onPressed: () async {
                                     await diseaseProvider.deleteArchivedResult(index);
                                     ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Deleted from archive")),
+                                      SnackBar(content: Text("Deleted from archive".tr())),
                                     );
                                   },
                                 ),
@@ -125,27 +123,23 @@ class ArchiveScreen extends StatelessWidget {
                             );
                           }).toList(),
                         );
-
                       }
                     },
                   ),
-
-
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
 
-            // --- قسم عرض الأسمدة ---
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Fertilizers:",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
-                ),
+                children: [
+                  Text(
+                    "Fertilizers:".tr(),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
+                  ),
+                ]
               ),
             ),
             const SizedBox(height: 10),
@@ -155,7 +149,7 @@ class ArchiveScreen extends StatelessWidget {
                 if (!snapshot.hasData) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error loading fertilizers: ${snapshot.error}'));
+                  return Center(child: Text('${"Error loading fertilizers:".tr()} ${snapshot.error}'));
                 } else {
                   final fertilizers = (snapshot.data!..shuffle()).take(4).toList();
                   return GridView.builder(
@@ -183,7 +177,6 @@ class ArchiveScreen extends StatelessWidget {
     );
   }
 
-  // ✅ دالة لتنسيق التاريخ حسب نوعه (String أو int)
   static String _parseTimestamp(dynamic timestamp) {
     try {
       if (timestamp is String) {
@@ -204,7 +197,7 @@ class ArchiveScreen extends StatelessWidget {
         final url = Uri.parse(fertilizer.link);
         if (!await launchUrl(url)) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Could not open link for ${fertilizer.name}")),
+            SnackBar(content: Text('${"Could not open link for".tr()} ${fertilizer.name}')),
           );
         }
       },
@@ -263,7 +256,6 @@ class ArchiveScreen extends StatelessWidget {
   }
 }
 
-// ✅ امتداد لتنسيق التاريخ
 extension DateTimeExtension on DateTime {
   String toShortDateString() {
     return '${year}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')} ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';

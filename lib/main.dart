@@ -1,8 +1,10 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:test_1/prefs/mode_theme.dart';
 import 'package:test_1/providers/bottom_nav_provider.dart';
+import 'package:test_1/providers/local_provider.dart';
 import 'package:test_1/providers/mode_provider.dart';
 import 'package:test_1/providers/plant_selection_provider.dart';
 import 'package:test_1/providers/tip_provider.dart';
@@ -21,6 +23,7 @@ import 'dart:typed_data';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(statusBarColor: Color(0xffedf3fa)),
   );
@@ -36,7 +39,26 @@ void main() async {
     developer.log("Error loading initial image for runModelTest: $e");
   }
 
-  runApp(ChangeNotifierProvider(create: (context)=>ModeProvider()..getTheme(),child: MyApp(),));
+  runApp(
+    EasyLocalization(
+      supportedLocales: [Locale('en'), Locale('ar')],
+      path: 'assets/langs',
+      fallbackLocale: Locale('en'),
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => DiseaseProvider()),
+          ChangeNotifierProvider(create: (_) => BottomNavProvider()),
+          ChangeNotifierProvider(create: (_) => PlantSelectionProvider()),
+          ChangeNotifierProvider(create: (_) => TipProvider()),
+          ChangeNotifierProvider(create: (_) => ModeProvider()..getTheme()),
+          ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ],
+        child: const MyApp(),
+      ),
+    ),
+  );
+
+
 
 }
 
@@ -46,23 +68,18 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DiseaseProvider()),
-        ChangeNotifierProvider(create: (_) => BottomNavProvider()),
-        ChangeNotifierProvider(create: (_) => PlantSelectionProvider()),
-        ChangeNotifierProvider(create: (_) => TipProvider()),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      themeAnimationStyle: AnimationStyle(duration: Duration(seconds: 1),curve: Curves.decelerate),
+      theme: Provider.of<ModeProvider>(context).darkModeEnable ? ModeTheme.darkTheme : ModeTheme.lightMode,
+      locale: Provider.of<LocaleProvider>(context).locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
+      // home: HomePage(),
+      home: Splashscreen2(),
 
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        themeAnimationStyle: AnimationStyle(duration: Duration(seconds: 1),curve: Curves.decelerate),
-        theme: Provider.of<ModeProvider>(context).darkModeEnable ? ModeTheme.darkTheme : ModeTheme.lightMode,
-        home: Splashscreen2(),
-
-      ),
     );
   }
 }

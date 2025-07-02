@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class TipProvider with ChangeNotifier {
-  late final String _randomTip;
+  late final String _randomTipKey;
 
   TipProvider() {
     _initTip();
   }
 
   void _initTip() {
-    final List<String> tips = [
+    // قائمة مفاتيح النصائح كما هي في ملف الترجمة (JSON)
+    final List<String> tipKeys = [
       "Water your plants early in the morning.",
       "Use organic fertilizers for better soil health.",
       "Rotate your crops each season.",
@@ -19,9 +20,9 @@ class TipProvider with ChangeNotifier {
       "Use natural pest control methods.",
       "Don't overwater your plants.",
     ];
-    tips.shuffle();
-    _randomTip = tips.first;
+    tipKeys.shuffle();
+    _randomTipKey = tipKeys.first;
   }
 
-  String get randomTip => _randomTip;
+  String get randomTipKey => _randomTipKey;
 }

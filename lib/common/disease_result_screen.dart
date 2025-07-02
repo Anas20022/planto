@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -39,7 +39,7 @@ class DiseaseDetailsWidget extends StatelessWidget {
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
-                    text: 'Disease: ',
+                    text: '${'Disease'.tr()}: ',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
@@ -47,9 +47,9 @@ class DiseaseDetailsWidget extends StatelessWidget {
                     ),
                     children: [
                       if (diseaseDetails.diseaseName.toLowerCase().contains("healthy"))
-                        const TextSpan(
-                          text: "Plant is healthy",
-                          style: TextStyle(color: Colors.green),
+                        TextSpan(
+                          text: "Plant is healthy".tr(),
+                          style: const TextStyle(color: Colors.green),
                         )
                       else
                         TextSpan(
@@ -59,19 +59,14 @@ class DiseaseDetailsWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 Text(
-                  "Accuracy: ${(diseaseDetails.accuracy * 100).toStringAsFixed(2)}%",
+                  "${'Accuracy'.tr()}: ${(diseaseDetails.accuracy * 100).toStringAsFixed(2)}%",
                   style: const TextStyle(
                     fontSize: 16,
                     color: Colors.grey,
                   ),
                 ),
-
-                const SizedBox(height: 10),
-
                 const SizedBox(height: 10),
                 if (diseaseDetails.link != null && diseaseDetails.link!.isNotEmpty)
                   GestureDetector(
@@ -81,20 +76,20 @@ class DiseaseDetailsWidget extends StatelessWidget {
                         throw Exception('Could not launch ${diseaseDetails.link}');
                       }
                     },
-                    child: const Text(
-                      "🌐 More info",
+                    child: Text(
+                      "More info".tr(),
                       style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                     ),
                   ),
                 const SizedBox(height: 20),
-                const Text("🌿 Remedies:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Remedies".tr() + ":", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const Divider(thickness: 1.2),
                 ...diseaseDetails.remedies.map((text) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Text("• $text", style: const TextStyle(fontSize: 16)),
                 )),
                 const SizedBox(height: 20),
-                const Text("🛡️ Prevention:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("Prevention".tr() + ":", style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const Divider(thickness: 1.2),
                 ...diseaseDetails.prevention.map((text) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -107,15 +102,14 @@ class DiseaseDetailsWidget extends StatelessWidget {
                       await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
                         diseaseDetails.plantName,
                         diseaseDetails.diseaseName,
-                        diseaseDetails.accuracy, // 👈 أضيفي هذا السطر
-
+                        diseaseDetails.accuracy,
                       );
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ تم حفظ هذه النتيجة في الأرشيف")),
+                        SnackBar(content: Text("Result saved to archive".tr())),
                       );
                     },
                     icon: const Icon(Icons.archive),
-                    label: const Text("أرشِف هذه النتيجة"),
+                    label: Text("Archive this result".tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF388E3C),
                       foregroundColor: Colors.white,

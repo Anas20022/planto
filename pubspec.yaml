@@ -48,6 +48,7 @@ dependencies:
   image: ^3.2.2
   permission_handler: ^11.0.0
   shared_preferences: ^2.5.3
+  easy_localization: ^3.0.0
   connectivity_plus: ^6.1.4
 
 dev_dependencies:
@@ -83,6 +84,7 @@ flutter:
     - assets/icon/
     - assets/image/rust.jpeg
     - assets/models/
+    - assets/langs/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

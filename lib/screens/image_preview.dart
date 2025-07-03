@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:easy_localization/easy_localization.dart';
@@ -138,6 +139,7 @@ class ImagePreview extends StatelessWidget {
                         } catch (e) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           print("Error during analysis: $e");
+                          log("Error during analysis: $e");
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text("${'Analysis failed:'.tr()} ${e.toString()}")),
                           );

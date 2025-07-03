@@ -116,7 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => const FeedbackScreen(),
+                  builder: (context) => const FeedbackFormPage(),
                 ),
               );
             },

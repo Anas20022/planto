@@ -59,7 +59,23 @@
   "Remedies": "Remedies",
   "Prevention": "Prevention",
   "Result saved to archive": "Result saved to archive",
-  "Archive this result": "Archive this result"
+  "Archive this result": "Archive this result",
+  "image.original_picked_path": "Original picked image path",
+  "image.copied_to": "Copied image to",
+  "image.copied_file_size": "Copied file size: {size} bytes",
+  "image.empty_or_corrupted": "Selected image is empty or corrupted.",
+  "image.no_selected": "No image selected.",
+  "image.error_processing": "Error processing image: {error}",
+  "feedback": "Feedback",
+  "feedback_form": "FEEDBACK FORM",
+  "name": "Name",
+  "email": "Mail Id",
+  "mobile_number": "Mobile Number",
+  "your_feedback": "Your feedback",
+  "submit": "Submit",
+  "sent": "Sent",
+  "thank_you_feedback": "Thank you for your feedback! We will get back to you soon.",
+  "ok": "OK"
 
 
 

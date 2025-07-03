@@ -59,7 +59,23 @@
   "Remedies": "العلاجات",
   "Prevention": "الوقاية",
   "Result saved to archive": "تم حفظ النتيجة في الأرشيف",
-  "Archive this result": "أرشِف هذه النتيجة"
+  "Archive this result": "أرشِف هذه النتيجة",
+  "image.original_picked_path": "مسار الصورة المحددة الأصلي",
+  "image.copied_to": "تم نسخ الصورة إلى",
+  "image.copied_file_size": "حجم الملف المنسوخ: {size} بايت",
+  "image.empty_or_corrupted": "الصورة المحددة فارغة أو تالفة.",
+  "image.no_selected": "لم يتم تحديد صورة.",
+  "image.error_processing": "حدث خطأ أثناء معالجة الصورة: {error}",
+  "feedback": "التقييم",
+  "feedback_form": "نموذج التقييم",
+  "name": "الاسم",
+  "email": "البريد الإلكتروني",
+  "mobile_number": "رقم الجوال",
+  "your_feedback": "ملاحظاتك",
+  "submit": "إرسال",
+  "sent": "تم الإرسال",
+  "thank_you_feedback": "شكرًا على ملاحظاتك! سنقوم بالرد عليك قريبًا.",
+  "ok": "حسنًا"
 
 
 }

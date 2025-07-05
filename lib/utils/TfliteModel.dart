@@ -85,19 +85,19 @@ class ModelManager {
     "Corn": "assets/models/Corn_model.tflite",
     "Grape": "assets/models/Grape_model.tflite",
     "Peach": "assets/models/Peach_model.tflite",
-    "Papper_bell": "assets/models/Papper_bell_model.tflite",
+    "Pepper_bell": "assets/models/Pepper_bell_model.tflite",
     "Potato": "assets/models/Potato_model.tflite",
     "Strawberry": "assets/models/Strawberry_model.tflite",
     "Tomato": "assets/models/Tomato_model.tflite",
   };
 
   final Map<String, List<String>> plantClassLabels = {
-    "Apple": ["Apple Scab", " Apple Black Rot", "Cedar Apple Rust", "Healthy"],
+    "Apple": ["Apple Scab", "Apple Black Rot", "Cedar Apple Rust", "Healthy"],
     "Cherry": ["Cherry Powdery Mildew", "Healthy"],
     "Corn": ["Corn Cercospora Leaf Spot", "Corn Common Rust", "Corn Northern Leaf Blight", "Healthy"],
     "Grape": ["Grape Black Rot", "Grape Black Measles", "Grape Isariopsis Leaf Spot", "Healthy"],
     "Peach": ["Peach Bacterial Spot", "Healthy"],
-    "Papper_bell": ["Papper Bell Bacterial Spot", "Healthy"],
+    "Pepper_bell": ["Pepper Bell Bacterial Spot", "Healthy"],
     "Potato": ["Potato Early Blight", "Potato Late Blight", "Healthy"],
     "Strawberry": ["Strawberry Leaf Scorch", "Healthy"],
     "Tomato": ["Tomato Bacterial Spot", "Tomato Early Blight", "Tomato Late Blight", "Tomato Leaf Mold",

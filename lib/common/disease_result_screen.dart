@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../providers/disease_details.dart';
 import '../providers/disease_provider.dart';
+import '../providers/mode_provider.dart';
 
 class DiseaseDetailsWidget extends StatelessWidget {
   final DiseaseDetails diseaseDetails;
@@ -28,7 +30,7 @@ class DiseaseDetailsWidget extends StatelessWidget {
               children: [
                 Center(
                   child: Text(
-                    diseaseDetails.plantName,
+                    diseaseDetails.plantName.tr(),
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -39,21 +41,22 @@ class DiseaseDetailsWidget extends StatelessWidget {
                 const SizedBox(height: 20),
                 RichText(
                   text: TextSpan(
-                    text: 'Disease: ',
-                    style: const TextStyle(
+                    text: 'Disease: '.tr(),
+                    style:  TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black,
+                      color: Provider.of<ModeProvider>(context).darkModeEnable ?Colors.white : Colors.black
+
                     ),
                     children: [
                       if (diseaseDetails.diseaseName.toLowerCase().contains("healthy"))
-                        const TextSpan(
-                          text: "Plant is healthy",
-                          style: TextStyle(color: Colors.green),
+                        TextSpan(
+                          text: "Plant is healthy".tr(),
+                          style: const TextStyle(color: Colors.green),
                         )
                       else
                         TextSpan(
-                          text: diseaseDetails.diseaseName,
+                          text: diseaseDetails.diseaseName.tr(),
                           style: const TextStyle(color: Colors.red),
                         ),
                     ],
@@ -62,17 +65,18 @@ class DiseaseDetailsWidget extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                Text(
-                  "Accuracy: ${(diseaseDetails.accuracy * 100).toStringAsFixed(2)}%",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey,
+                if (diseaseDetails.diseaseName.toLowerCase() != "unknown")
+                  Text(
+                    "${"Accuracy".tr()}: ${(diseaseDetails.accuracy * 100).toStringAsFixed(2)}%",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
+
 
                 const SizedBox(height: 10),
 
-                const SizedBox(height: 10),
                 if (diseaseDetails.link != null && diseaseDetails.link!.isNotEmpty)
                   GestureDetector(
                     onTap: () async {
@@ -81,20 +85,29 @@ class DiseaseDetailsWidget extends StatelessWidget {
                         throw Exception('Could not launch ${diseaseDetails.link}');
                       }
                     },
-                    child: const Text(
-                      "🌐 More info",
-                      style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                    child: Row(
+                      children: [
+                        Text(
+                          "🌐 ",
+                          style: const TextStyle(color: Colors.blue, fontSize: 18),
+                        ),
+                        Text(
+                          "More info ".tr(),
+                          style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline,fontSize: 20,),
+                        ),
+                      ],
                     ),
                   ),
+
                 const SizedBox(height: 20),
-                const Text("🌿 Remedies:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("🌿 Remedies:".tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const Divider(thickness: 1.2),
                 ...diseaseDetails.remedies.map((text) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Text("• $text", style: const TextStyle(fontSize: 16)),
                 )),
                 const SizedBox(height: 20),
-                const Text("🛡️ Prevention:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text("🛡️ Prevention:".tr(), style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const Divider(thickness: 1.2),
                 ...diseaseDetails.prevention.map((text) => Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -104,18 +117,24 @@ class DiseaseDetailsWidget extends StatelessWidget {
                 Center(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
+                      final archived = await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
                         diseaseDetails.plantName,
                         diseaseDetails.diseaseName,
-                        diseaseDetails.accuracy, // 👈 أضيفي هذا السطر
+                        diseaseDetails.accuracy,
+                      );
 
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ تم حفظ هذه النتيجة في الأرشيف")),
-                      );
+                      if (archived) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("✅ Result archived successfully.".tr())),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("⚠️ This result is already archived.".tr())),
+                        );
+                      }
                     },
                     icon: const Icon(Icons.archive),
-                    label: const Text("أرشِف هذه النتيجة"),
+                    label: Text("Archive this result".tr()),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF388E3C),
                       foregroundColor: Colors.white,

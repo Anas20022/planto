@@ -1,23 +1,19 @@
+import 'dart:developer';
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
-
-import 'dart:typed_data'; // إضافة هذا الاستيراد
-
+import '../components/show_analyzing_dialog.dart';
 import '../providers/disease_details.dart';
 import '../providers/disease_provider.dart';
 import '../providers/plant_selection_provider.dart';
-import '../utils/TfliteModel.dart';
 import 'disease_result_screen.dart';
 
 class ImagePreview extends StatelessWidget {
   final String imagePath;
   const ImagePreview({super.key, required this.imagePath});
 
-
-  // جديد: دالة لقراءة الملف كبايتات
   Future<Uint8List?> _readImageBytes() async {
     try {
       final file = File(imagePath);
@@ -33,12 +29,11 @@ class ImagePreview extends StatelessWidget {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text('About'.tr()),
         backgroundColor: Colors.green,
         elevation: 0,
       ),
@@ -48,49 +43,41 @@ class ImagePreview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-
-
             Center(
               child: SizedBox(
                 height: 400,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20),
-                  child: FutureBuilder<Uint8List?>( // استخدم FutureBuilder لقراءة البايتات
-                    future: _readImageBytes(), // استدعاء الدالة الجديدة
+                  child: FutureBuilder<Uint8List?>(
+                    future: _readImageBytes(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.done) {
                         if (snapshot.hasData && snapshot.data != null) {
-                          // إذا كانت البيانات موجودة، اعرض الصورة باستخدام Image.memory
                           return Image.memory(
                             snapshot.data!,
                             fit: BoxFit.cover,
                           );
                         } else if (snapshot.hasError) {
-                          // إذا حدث خطأ في قراءة البايتات
                           print("FutureBuilder error: ${snapshot.error}");
-                          return const Center(child: Text('Failed to load image.'));
+                          return Center(child: Text('Failed to load image.'.tr()));
                         } else {
-                          // إذا لم تكن هناك بيانات (مثلاً الملف غير موجود أو فارغ)
                           print("FutureBuilder: No data or empty data.");
-                          return const Center(child: Text('Image data not available.'));
+                          return Center(child: Text('Image data not available.'.tr()));
                         }
                       }
-                      // أثناء التحميل
                       return const Center(child: CircularProgressIndicator());
                     },
                   ),
                 ),
               ),
             ),
-
-
-            const SizedBox(height: 20),  // مساحة فارغة بين الصورة والأزرار
+            const SizedBox(height: 20),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius:  BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.1),
@@ -102,23 +89,15 @@ class ImagePreview extends StatelessWidget {
                 ),
                 padding: const EdgeInsets.all(20),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,  // جعل الأزرار في الأسفل
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-
-
-                    // زر تأكيد الصورة
-                    // في ملف: screens/image_preview.dart
-// ... (الجزء العلوي من كلاس ImagePreview)
-
-// زر تأكيد الصورة
                     ElevatedButton(
                       onPressed: () async {
-                        // 1. التحقق من اختيار النبتة وقراءة الصورة
                         final selectedPlant = context.read<PlantSelectionProvider>().selectedPlant;
 
                         if (selectedPlant == null || selectedPlant.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Please select a plant first!")),
+                            SnackBar(content: Text("Please select a plant first!".tr())),
                           );
                           return;
                         }
@@ -126,51 +105,77 @@ class ImagePreview extends StatelessWidget {
                         Uint8List? imageBytes = await _readImageBytes();
                         if (imageBytes == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text("Error: Image data not available for analysis.")),
+                            SnackBar(content: Text("Error: Image data not available for analysis.".tr())),
                           );
                           return;
                         }
 
-                        // 2. بدء عملية التحليل وعرض مؤشر تحميل
                         try {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Row(
-                                children: [
-                                  CircularProgressIndicator(color: Colors.white),
-                                  SizedBox(width: 16),
-                                  Text("Analyzing image..."),
-                                ],
-                              ),
-                              duration: Duration(seconds: 10), // Adjust as needed
-                            ),
+                          // 👇 نبدأ نحسب الوقت ونفتح الأنيميشن
+                          final startTime = DateTime.now();
+                          await showAnalyzingDialog(context);
+
+                          final diseaseProvider = context.read<DiseaseProvider>();
+
+                          final DiseaseDetails detectedDetails = await diseaseProvider.detectDisease(
+                            selectedPlant,
+                            imageBytes,
                           );
 
-                          // 3. الحصول على كائن DiseaseProvider واستدعاء دالة detectDisease
-                          final diseaseProvider = context.read<DiseaseProvider>();
-                          final DiseaseDetails detectedDetails =
-                          await diseaseProvider.detectDisease(selectedPlant, imageBytes);
+                          // 👇 نحسب الوقت المستغرق
+                          final duration = DateTime.now().difference(startTime);
+                          final remaining = Duration(seconds: 8) - duration;
 
-                          // 4. إخفاء مؤشر التحميل بعد الانتهاء
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          if (remaining > Duration.zero) {
+                            await Future.delayed(remaining);
+                          }
 
-                          // 5. الانتقال إلى شاشة عرض النتائج (DiseaseResultScreen)
+                          // 👇 نغلق Dialog بعد التحليل والانتظار
+                          Navigator.of(context).pop();
+
+                          // ✅ إذا Unknown أو Healthy، نعرض النتائج مباشرة بدون محاولة قراءة JSON
+                          if (detectedDetails.diseaseName == "Unknown" || detectedDetails.diseaseName == "Healthy") {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DiseaseResultScreen(diseaseDetails: detectedDetails),
+                              ),
+                            );
+                            return;
+                          }
+
+                          // ✅ باقي الحالات (مرض معروف)، نكمل ونجيب البيانات من JSON
+                          final diseaseInfo = await diseaseProvider.loadDiseaseData(detectedDetails.diseaseName);
+
+                          final DiseaseDetails fullDetails = DiseaseDetails(
+                            plantName: selectedPlant,
+                            diseaseName: detectedDetails.diseaseName,
+                            accuracy: detectedDetails.accuracy,
+                            remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
+                            prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
+                            link: diseaseInfo['link'],
+                            fertilizer: {},
+                            suggestions: [],
+                          );
+
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DiseaseResultScreen(diseaseDetails: detectedDetails),
+                              builder: (context) => DiseaseResultScreen(diseaseDetails: fullDetails),
                             ),
                           );
-
                         } catch (e) {
-                          // 6. التعامل مع الأخطاء: إخفاء التحميل وعرض رسالة خطأ
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          Navigator.of(context).pop(); // نغلق الـ Dialog في حال الخطأ
                           print("Error during analysis: $e");
+                          log("Error during analysis: $e");
+
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Analysis failed: ${e.toString()}")),
+                            SnackBar(content: Text("${'Analysis failed:'.tr()} ${e.toString()}")),
                           );
                         }
-                      },
+                      }
+
+                      ,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
                         backgroundColor: Colors.green,
@@ -181,19 +186,15 @@ class ImagePreview extends StatelessWidget {
                         elevation: 5,
                         shadowColor: Colors.green.withOpacity(0.3),
                       ),
-                      child: const Text(
-                        "Confirm and Analyze",
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      child: Text(
+                        "Confirm and Analyze".tr(),
+                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ),
                     const SizedBox(height: 20),
-                    // زر إلغاء
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context); // العودة للكاميرا
+                        Navigator.pop(context);
                       },
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 10),
@@ -201,9 +202,9 @@ class ImagePreview extends StatelessWidget {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      child: const Text(
-                        "Cancel",
-                        style: TextStyle(color: Colors.red),
+                      child: Text(
+                        "Cancel".tr(),
+                        style: const TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
@@ -216,7 +217,3 @@ class ImagePreview extends StatelessWidget {
     );
   }
 }
-
-
-
-

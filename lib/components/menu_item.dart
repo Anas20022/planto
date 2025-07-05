@@ -45,7 +45,7 @@ class MenuItem extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 text,
-                style: const TextStyle(fontSize: 16,color: Color(0xFF508776)),
+                style: const TextStyle(fontSize: 16,color: Color(0xFF508776)),textAlign: TextAlign.center,
               ),
             ],
           ),

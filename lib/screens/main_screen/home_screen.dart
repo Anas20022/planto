@@ -1,6 +1,8 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:test_1/main.dart';
 
 import '../../common/image_picker.dart';
 import '../../components/menu_item.dart';
@@ -19,17 +21,17 @@ class HomeScreen extends StatelessWidget {
 
     final List<Plant> vegetables = [
       Plant(name: "Corn", imagePath: 'assets/image/corn.png'), // كان "corn"
-      Plant(name: "Papper_bell", imagePath: 'assets/image/pepper.png'), // كان "Pepper"
+      Plant(name: "Pepper_bell", imagePath: 'assets/image/pepper.png'), // كان "Pepper"
       Plant(name: "Potato", imagePath: 'assets/image/potato.png'), // كان "potato"
       Plant(name: "Tomato", imagePath: 'assets/image/tomato.png'), // كان "tomato"
     ];
 
     final List<Plant> fruits = [
       Plant(name: "Apple", imagePath: 'assets/image/apple.png'),
-      Plant(name: "Banana", imagePath: 'assets/image/banana.png'), // هذا النبات ليس له نموذج حاليا
       Plant(name: "Cherry", imagePath: 'assets/image/cherry.png'),
       Plant(name: "Peach", imagePath: 'assets/image/peach.png'),
       Plant(name: "Strawberry", imagePath: 'assets/image/strawberry.png'), // كان "strawberry"
+      Plant(name: "Grape", imagePath: 'assets/image/grape.png'), // هذا النبات ليس له نموذج حاليا
     ];
     return SafeArea(
       child: Scaffold(
@@ -97,7 +99,7 @@ class HomeScreen extends StatelessWidget {
                 //   !offline ? buildMenu2(context) : const SizedBox(),
                 // ),
                 Text(
-                  "Vegetables",
+                  "Vegetables".tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
                 ),
 
@@ -107,7 +109,7 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 20),
 
                 Text(
-                  "Fruits",
+                  "Fruits".tr(),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
                 ),
 
@@ -178,7 +180,7 @@ class HomeScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           MenuItem(
-              text: "Upload Image",
+              text: "Upload Image".tr(),
               icon: Icons.upload_file_rounded,
               onPressed: () {
                 // تحقق إذا كان قد تم تحديد نبتة
@@ -187,7 +189,7 @@ class HomeScreen extends StatelessWidget {
                   // إظهار رسالة تنبيه للمستخدم
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Please select a plant first!"),
+                      content: Text("Please select a plant first!".tr()),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -198,7 +200,7 @@ class HomeScreen extends StatelessWidget {
               }),
           const SizedBox(width: 20),
           MenuItem(
-              text: "Scan for Disease",
+              text: "Scan for Disease".tr(),
               icon: Icons.camera_enhance_rounded,
               onPressed: () {
                 // تحقق إذا كان قد تم تحديد نبتة
@@ -207,7 +209,7 @@ class HomeScreen extends StatelessWidget {
                   // إظهار رسالة تنبيه للمستخدم
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text("Please select a plant first!"),
+                      content: Text("Please select a plant first!".tr()),
                       backgroundColor: Colors.red,
                     ),
                   );
@@ -265,7 +267,7 @@ class HomeScreen extends StatelessWidget {
               ),
               const SizedBox(height: 5),
               Text(
-                plant.name,
+                plant.name.tr(),
                 style: TextStyle(
                   fontSize: 12,
                   color: isSelected ? Colors.white : Color(0xFF438853), // تغيير النص حسب التحديد
@@ -328,7 +330,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(width: 15),
             Expanded(
               child: Text(
-                randomTip,
+                randomTip.tr(),
                 style: const TextStyle(
                   fontSize: 16,
                   color: Color(0xFF438853),

@@ -73,9 +73,20 @@ class DiseaseProvider with ChangeNotifier {
     return null;
   }
 
-  Future<void> saveArchivedAnalysisResult(String plantName, String diseaseName, double accuracy) async {
+  Future<bool> saveArchivedAnalysisResult(String plantName, String diseaseName, double accuracy) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> archivedList = prefs.getStringList('archived_results') ?? [];
+
+    final alreadyExists = archivedList.any((entry) {
+      final data = jsonDecode(entry);
+      return data['plantName'] == plantName &&
+          data['diseaseName'] == diseaseName &&
+          (data['accuracy'] as double).toStringAsFixed(4) == accuracy.toStringAsFixed(4); // نطابق النسبة بدقة
+    });
+
+    if (alreadyExists) {
+      return false; // لم نحفظ لأنها موجودة
+    }
 
     final Map<String, dynamic> newResult = {
       'plantName': plantName,
@@ -88,7 +99,9 @@ class DiseaseProvider with ChangeNotifier {
     await prefs.setStringList('archived_results', archivedList);
     await loadArchivedResults();
     notifyListeners();
+    return true; // تم الحفظ
   }
+
 
 
   Future<List<Map<String, dynamic>>> getArchivedAnalysisResult() async {
@@ -137,11 +150,30 @@ class DiseaseProvider with ChangeNotifier {
         if (result == null) {
           throw Exception("فشل في التحليل، النموذج لم يرجع نتيجة.");
         }
+
         final String detectedDiseaseName = result.label;
         final double confidence = result.confidence;
 
-        // 👇 هنا نتحقق من الدقة
-        if (confidence < 0.80) {
+        // 👇 إذا النتيجة أقل من العتبة => Unknown => نرجع ونوقف كل شيء
+        if (confidence < 0.70) {
+          await saveLastAnalysisResult(plantName, "Unknown", confidence);
+
+          print("⚠️ Low confidence (${confidence.toStringAsFixed(2)}), returning Unknown early.");
+
+          return DiseaseDetails(
+            plantName: plantName,
+            diseaseName: "Unknown",
+            accuracy: confidence,
+            remedies: [],
+            prevention: [],
+            suggestions: [],
+            fertilizer: {},
+            link: null,
+          );
+        }
+
+        // ✅ إذا النتيجة Healthy
+        if (detectedDiseaseName == "Healthy") {
           await saveLastAnalysisResult(plantName, "Healthy", confidence);
 
           return DiseaseDetails(
@@ -150,28 +182,27 @@ class DiseaseProvider with ChangeNotifier {
             accuracy: confidence,
             remedies: [],
             prevention: [],
-            suggestions: [],
+            suggestions: randomSuggestions,
             fertilizer: {},
           );
         }
 
-// باقي الكود إذا كانت الدقة عالية
+        // 👉 إلى هنا واصل فقط إن كانت النتيجة حقيقية مع دقة جيدة
         await saveLastAnalysisResult(plantName, detectedDiseaseName, confidence);
-        await saveArchivedAnalysisResult(plantName, detectedDiseaseName, confidence);
 
-        final diseaseInfo = await loadDiseaseData(detectedDiseaseName);
+        final diseaseInfo = await loadDiseaseData(detectedDiseaseName); // <<<<<< هذا السطر ما يشتغل إلا لما نكون متأكدين
 
         return DiseaseDetails(
           plantName: plantName,
           diseaseName: detectedDiseaseName,
-          accuracy: confidence, // 👈 أضيفي هذا في الكائن
+          accuracy: confidence,
           remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
           prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
           suggestions: randomSuggestions,
           fertilizer: {},
         );
-
-      } catch (e) {
+      }
+      catch (e) {
         print("Error running local TFLite model: $e");
         throw Exception("حدث خطأ أثناء تشغيل النموذج المحلي: ${e.toString()}");
       }

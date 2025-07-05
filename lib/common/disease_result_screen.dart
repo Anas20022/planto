@@ -72,7 +72,6 @@ class DiseaseDetailsWidget extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                const SizedBox(height: 10),
                 if (diseaseDetails.link != null && diseaseDetails.link!.isNotEmpty)
                   GestureDetector(
                     onTap: () async {
@@ -86,6 +85,7 @@ class DiseaseDetailsWidget extends StatelessWidget {
                       style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
                     ),
                   ),
+
                 const SizedBox(height: 20),
                 const Text("🌿 Remedies:", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const Divider(thickness: 1.2),
@@ -104,18 +104,24 @@ class DiseaseDetailsWidget extends StatelessWidget {
                 Center(
                   child: ElevatedButton.icon(
                     onPressed: () async {
-                      await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
+                      final archived = await Provider.of<DiseaseProvider>(context, listen: false).saveArchivedAnalysisResult(
                         diseaseDetails.plantName,
                         diseaseDetails.diseaseName,
-                        diseaseDetails.accuracy, // 👈 أضيفي هذا السطر
+                        diseaseDetails.accuracy,
+                      );
 
-                      );
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("✅ تم حفظ هذه النتيجة في الأرشيف")),
-                      );
+                      if (archived) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("✅ Result archived successfully.")),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("⚠️ This result is already archived.")),
+                        );
+                      }
                     },
                     icon: const Icon(Icons.archive),
-                    label: const Text("أرشِف هذه النتيجة"),
+                    label: const Text("Archive this result"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF388E3C),
                       foregroundColor: Colors.white,

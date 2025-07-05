@@ -73,9 +73,20 @@ class DiseaseProvider with ChangeNotifier {
     return null;
   }
 
-  Future<void> saveArchivedAnalysisResult(String plantName, String diseaseName, double accuracy) async {
+  Future<bool> saveArchivedAnalysisResult(String plantName, String diseaseName, double accuracy) async {
     final prefs = await SharedPreferences.getInstance();
     final List<String> archivedList = prefs.getStringList('archived_results') ?? [];
+
+    final alreadyExists = archivedList.any((entry) {
+      final data = jsonDecode(entry);
+      return data['plantName'] == plantName &&
+          data['diseaseName'] == diseaseName &&
+          (data['accuracy'] as double).toStringAsFixed(4) == accuracy.toStringAsFixed(4); // نطابق النسبة بدقة
+    });
+
+    if (alreadyExists) {
+      return false; // لم نحفظ لأنها موجودة
+    }
 
     final Map<String, dynamic> newResult = {
       'plantName': plantName,
@@ -88,7 +99,9 @@ class DiseaseProvider with ChangeNotifier {
     await prefs.setStringList('archived_results', archivedList);
     await loadArchivedResults();
     notifyListeners();
+    return true; // تم الحفظ
   }
+
 
 
   Future<List<Map<String, dynamic>>> getArchivedAnalysisResult() async {
@@ -142,22 +155,23 @@ class DiseaseProvider with ChangeNotifier {
 
         // 👇 هنا نتحقق من الدقة
         if (confidence < 0.80) {
-          await saveLastAnalysisResult(plantName, "Healthy", confidence);
+          await saveLastAnalysisResult(plantName, "Unknown", confidence);
 
           return DiseaseDetails(
             plantName: plantName,
-            diseaseName: "Healthy",
+            diseaseName: "Unknown",
             accuracy: confidence,
             remedies: [],
             prevention: [],
             suggestions: [],
             fertilizer: {},
+            link: null,
           );
         }
 
 // باقي الكود إذا كانت الدقة عالية
         await saveLastAnalysisResult(plantName, detectedDiseaseName, confidence);
-        await saveArchivedAnalysisResult(plantName, detectedDiseaseName, confidence);
+
 
         final diseaseInfo = await loadDiseaseData(detectedDiseaseName);
 

@@ -4,7 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/fetch_fertilizer_model.dart';
+import '../../providers/disease_details.dart';
 import '../../providers/disease_provider.dart';
+import '../disease_result_screen.dart';
 
 class ArchiveScreen extends StatelessWidget {
   const ArchiveScreen({super.key});
@@ -56,6 +58,91 @@ class ArchiveScreen extends StatelessWidget {
                                 ],
                               ),
                               child: ListTile(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+                                    ),
+                                    builder: (_) {
+                                      return Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            ListTile(
+                                              leading: const Icon(Icons.info_outline, color: Colors.blue),
+                                              title: const Text("View details"),
+                                              onTap: () async {
+                                                Navigator.pop(context); // نغلق الـ BottomSheet أولاً
+
+                                                final diseaseName = result['diseaseName']?.toString() ?? "";
+                                                final accuracy = result['accuracy'] ?? 0.0;
+
+                                                // ✅ التحقق هنا فقط، وليس عند ضغط العنصر بالكامل
+                                                if (diseaseName.toLowerCase() == "unknown" || accuracy < 0.8) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    const SnackBar(
+                                                      content: Text("❗ No details available for unknown disease."),
+                                                    ),
+                                                  );
+                                                  return;
+                                                }
+
+                                                try {
+                                                  final diseaseInfo = await diseaseProvider.loadDiseaseData(diseaseName);
+                                                  final allFertilizers = await Fertilizer.getFertilizers();
+                                                  allFertilizers.shuffle();
+                                                  final randomSuggestions = allFertilizers.take(4).toList();
+
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => DiseaseResultScreen(
+                                                        diseaseDetails: DiseaseDetails(
+                                                          plantName: result['plantName'],
+                                                          diseaseName: diseaseName,
+                                                          accuracy: accuracy,
+                                                          remedies: List<String>.from(diseaseInfo['remedies'] ?? []),
+                                                          prevention: List<String>.from(diseaseInfo['prevention'] ?? []),
+                                                          link: diseaseInfo['link'],
+                                                          fertilizer: {},
+                                                          suggestions: randomSuggestions,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                } catch (e) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text("Error loading disease details: $e")),
+                                                  );
+                                                }
+                                              },
+                                            ),
+
+                                            ListTile(
+                                              leading: const Icon(Icons.delete_forever, color: Colors.red),
+                                              title: const Text("Delete from archive"),
+                                              onTap: () async {
+                                                Navigator.pop(context); // اغلاق الـ BottomSheet
+                                                await diseaseProvider.deleteArchivedResult(index);
+                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(content: Text("Deleted from archive")),
+                                                );
+                                              },
+                                            ),
+                                            ListTile(
+                                              leading: const Icon(Icons.cancel, color: Colors.grey),
+                                              title: const Text("Cancel"),
+                                              onTap: () => Navigator.pop(context),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  );
+                                },
+
                                 contentPadding: const EdgeInsets.all(12),
                                 title: Text(
                                   "🌱 Plant: ${result['plantName']}",
@@ -66,14 +153,19 @@ class ArchiveScreen extends StatelessWidget {
                                   children: [
                                     const SizedBox(height: 4),
                                     Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "🦠 Disease: ${result['diseaseName']}",
-                                          style: TextStyle(
-                                            color: result['diseaseName'].toString().toLowerCase().contains("healthy")
-                                                ? Colors.green
-                                                : Colors.red,
-                                            fontWeight: FontWeight.w500,
+                                        Expanded(
+                                          child: Text(
+                                            "🦠 Disease: ${result['diseaseName']}",
+                                            style: TextStyle(
+                                              color: result['diseaseName'].toString().toLowerCase().contains("healthy")
+                                                  ? Colors.green
+                                                  : Colors.red,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
                                           ),
                                         ),
                                         const SizedBox(width: 10),
@@ -84,6 +176,7 @@ class ArchiveScreen extends StatelessWidget {
                                           ),
                                       ],
                                     ),
+
 
                                     const SizedBox(height: 4),
                                     Text(
@@ -112,15 +205,15 @@ class ArchiveScreen extends StatelessWidget {
                                       ),
                                   ],
                                 ),
-                                trailing: IconButton(
-                                  icon: const Icon(Icons.delete_forever, color: Colors.red),
-                                  onPressed: () async {
-                                    await diseaseProvider.deleteArchivedResult(index);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(content: Text("Deleted from archive")),
-                                    );
-                                  },
-                                ),
+                                // trailing: IconButton(
+                                //   icon: const Icon(Icons.delete_forever, color: Colors.red),
+                                //   onPressed: () async {
+                                //     await diseaseProvider.deleteArchivedResult(index);
+                                //     ScaffoldMessenger.of(context).showSnackBar(
+                                //       const SnackBar(content: Text("Deleted from archive")),
+                                //     );
+                                //   },
+                                // ),
                               ),
                             );
                           }).toList(),

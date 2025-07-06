@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:test_1/pref/mode_them.dart';
 import 'package:test_1/providers/bottom_nav_provider.dart';
+import 'package:test_1/providers/mode_provider.dart';
 import 'package:test_1/providers/plant_selection_provider.dart';
 import 'package:test_1/providers/tip_provider.dart';
 
@@ -34,7 +36,13 @@ void main() async {
     developer.log("Error loading initial image for runModelTest: $e");
   }
 
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => DiseaseProvider()),
+    ChangeNotifierProvider(create: (_) => BottomNavProvider()),
+    ChangeNotifierProvider(create: (_) => PlantSelectionProvider()),
+    ChangeNotifierProvider(create: (_) => TipProvider()),
+    ChangeNotifierProvider(create: (_) => ModeProvider()..getTheme()),
+  ],child: const MyApp(),));
 }
 
 class MyApp extends StatelessWidget {
@@ -43,19 +51,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DiseaseProvider()),
-        ChangeNotifierProvider(create: (_) => BottomNavProvider()),
-        ChangeNotifierProvider(create: (_) => PlantSelectionProvider()),
-        ChangeNotifierProvider(create: (_) => TipProvider()),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
-        navigatorKey: navigatorKey,
-        debugShowCheckedModeBanner: false,
-        home: Splashscreen2(),
-      ),
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: Provider.of<ModeProvider>(context).darkModeEnable ? ModeTheme.darkTheme : ModeTheme.lightMode,
+      navigatorKey: navigatorKey,
+      debugShowCheckedModeBanner: false,
+      home: Splashscreen2(),
     );
   }
 }

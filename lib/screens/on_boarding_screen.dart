@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../main_screens.dart';
+import '../providers/mode_provider.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -40,7 +42,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      //backgroundColor: Colors.white,
       body: Column(
         children: [
           Expanded(
@@ -75,7 +77,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       onboardingData[index]['subtitle']!,
                       style: TextStyle(
                         fontSize: 16,
-                        color: Color(0xff36455A).withOpacity(0.8),
+                        color: Provider.of<ModeProvider>(context).darkModeEnable?Colors.white:Color(0xff36455A).withOpacity(0.8),
                       ),
                       textAlign: TextAlign.center,
                     ),

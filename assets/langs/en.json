@@ -92,7 +92,26 @@
   "Archive this result": "Archive this result",
   "Plant":"Plant",
   "Date":"Date",
-  "Unknown":"Unknown"
+  "Unknown":"Unknown",
+  "contact_us": "Contact Us",
+  "contact_us_description": "Don't hesitate to contact us whether you have a suggestion on our improvement, a complaint to discuss or an issue to solve.",
+  "call_us": "Call us",
+  "email_us": "Email us",
+  "working_hours": "Mon–Fri • 9–17",
+  "social_media": "Contact us in Social Media",
+  "instagram": "Instagram",
+  "instagram_desc": "4.6K Followers • 118 Posts",
+  "telegram": "Telegram",
+  "telegram_desc": "1.3K Followers • 85 Posts",
+  "facebook": "Facebook",
+  "facebook_desc": "3.8K Followers • 136 Posts",
+  "whatsapp": "WhatsApp",
+  "youtube": "YouTube",
+  "youtube_desc": "Watch our videos",
+  "location": "Our Location",
+  "location_desc": "Open in Maps"
+
+
 
 
 

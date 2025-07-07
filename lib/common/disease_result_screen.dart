@@ -56,7 +56,7 @@ class DiseaseDetailsWidget extends StatelessWidget {
                         )
                       else
                         TextSpan(
-                          text: diseaseDetails.diseaseName,
+                          text: diseaseDetails.diseaseName.tr(),
                           style: const TextStyle(color: Colors.red),
                         ),
                     ],

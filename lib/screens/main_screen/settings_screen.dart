@@ -3,8 +3,10 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:test_1/providers/mode_provider.dart';
+import 'package:test_1/screens/contactUs_screen.dart';
 
 import '../../providers/local_provider.dart';
+import '../feedback_page.dart';
 import '../feedback_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -108,17 +110,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             title: Text('Contact Us'.tr()),
             trailing: const Icon(Icons.arrow_forward_ios),
             onTap: () {
-              // هنا يمكن إضافة الإجراء المطلوب عند الضغط
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const ContactUsScreen(),
+                ),
+              );
             },
           ),
           const Divider(),
           InkWell(
             onTap: () {
-              // Navigator.of(context).push(
-              //   MaterialPageRoute(
-              //     builder: (context) => const FeedbackFormPage(),
-              //   ),
-              // );
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const FeedbackFormPage(),
+                ),
+              );
             },
             child: ListTile(
               leading: const Icon(Icons.feedback_outlined),

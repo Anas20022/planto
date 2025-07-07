@@ -42,6 +42,9 @@
   "Could not open link.": "Could not open link.",
   "Deleted from archive": "Deleted from archive",
   "Fertilizers:": "Fertilizers:",
+  "View details": "View details",
+  "❗ No details available for unknown disease.": "❗ No details available for unknown disease.",
+  "Delete from archive": "حذف من الأرشيف",
   "Error loading fertilizers:": "Error loading fertilizers:",
   "Could not open link for": "Could not open link for",
   "About": "About",
@@ -53,6 +56,8 @@
   "Cancel": "Cancel",
   "Disease Details": "Disease Details",
   "Disease": "Disease",
+  "Disease: ": "Disease: ",
+
   "Plant is healthy": "Plant is healthy",
   "Accuracy": "Accuracy",
   "More info": "More info",
@@ -63,8 +68,8 @@
   "image.original_picked_path": "Original picked image path",
   "image.copied_to": "Copied image to",
   "image.copied_file_size": "Copied file size: {size} bytes",
-  "image.empty_or_corrupted": "Selected image is empty or corrupted.",
-  "image.no_selected": "No image selected.",
+  "Selected image is empty or corrupted.": "Selected image is empty or corrupted.",
+  "No image selected.": "No image selected.",
   "image.error_processing": "Error processing image: {error}",
   "feedback": "Feedback",
   "feedback_form": "FEEDBACK FORM",
@@ -75,7 +80,19 @@
   "submit": "Submit",
   "sent": "Sent",
   "thank_you_feedback": "Thank you for your feedback! We will get back to you soon.",
-  "ok": "OK"
+  "ok": "OK",
+  "Disease: ": "Disease: ",
+  "Plant is healthy": "Plant is healthy",
+  "Accuracy": "Accuracy",
+  "🌐 More info": "🌐 More info",
+  "🌿 Remedies:": "🌿 Remedies:",
+  "🛡️ Prevention:": "🛡️ Prevention:",
+  "✅ Result archived successfully.": "✅ Result archived successfully.",
+  "⚠️ This result is already archived.": "⚠️ This result is already archived.",
+  "Archive this result": "Archive this result",
+  "Plant":"Plant",
+  "Date":"Date",
+  "Unknown":"Unknown"
 
 
 

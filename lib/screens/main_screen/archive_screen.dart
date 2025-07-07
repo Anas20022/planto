@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
@@ -19,7 +19,7 @@ class ArchiveScreen extends StatelessWidget {
     }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Archive"),
+        title: Text("Archive".tr()),
         backgroundColor: const Color(0xFF508776),
       ),
       body: SingleChildScrollView(
@@ -41,9 +41,9 @@ class ArchiveScreen extends StatelessWidget {
                       if (results == null) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (results.isEmpty) {
-                        return const Center(child: Text("No archived analyses found.", style: TextStyle(fontSize: 16)));
+                        return Center(child: Text("No archived analyses found.".tr(), style: const TextStyle(fontSize: 16)));
                       } else {
-                        return  Column(
+                        return Column(
                           children: results.asMap().entries.map((entry) {
                             final index = entry.key;
                             final result = entry.value;
@@ -72,18 +72,17 @@ class ArchiveScreen extends StatelessWidget {
                                           children: [
                                             ListTile(
                                               leading: const Icon(Icons.info_outline, color: Colors.blue),
-                                              title: const Text("View details"),
+                                              title: Text("View details".tr()),
                                               onTap: () async {
-                                                Navigator.pop(context); // نغلق الـ BottomSheet أولاً
+                                                Navigator.pop(context);
 
                                                 final diseaseName = result['diseaseName']?.toString() ?? "";
                                                 final accuracy = result['accuracy'] ?? 0.0;
 
-                                                // ✅ التحقق هنا فقط، وليس عند ضغط العنصر بالكامل
                                                 if (diseaseName.toLowerCase() == "unknown" || accuracy < 0.8) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
-                                                    const SnackBar(
-                                                      content: Text("❗ No details available for unknown disease."),
+                                                    SnackBar(
+                                                      content: Text("❗ No details available for unknown disease.".tr()),
                                                     ),
                                                   );
                                                   return;
@@ -122,18 +121,18 @@ class ArchiveScreen extends StatelessWidget {
 
                                             ListTile(
                                               leading: const Icon(Icons.delete_forever, color: Colors.red),
-                                              title: const Text("Delete from archive"),
+                                              title: Text("Delete from archive".tr()),
                                               onTap: () async {
-                                                Navigator.pop(context); // اغلاق الـ BottomSheet
+                                                Navigator.pop(context);
                                                 await diseaseProvider.deleteArchivedResult(index);
                                                 ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(content: Text("Deleted from archive")),
+                                                  SnackBar(content: Text("Deleted from archive".tr())),
                                                 );
                                               },
                                             ),
                                             ListTile(
                                               leading: const Icon(Icons.cancel, color: Colors.grey),
-                                              title: const Text("Cancel"),
+                                              title: Text("Cancel".tr()),
                                               onTap: () => Navigator.pop(context),
                                             ),
                                           ],
@@ -142,11 +141,18 @@ class ArchiveScreen extends StatelessWidget {
                                     },
                                   );
                                 },
-
                                 contentPadding: const EdgeInsets.all(12),
-                                title: Text(
-                                  "🌱 Plant: ${result['plantName']}",
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                title: Row(
+                                  children: [
+                                    Text(
+                                      "🌱 ${"Plant".tr()}: ",
+                                      style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.black),
+                                    ),
+                                    Text(
+                                      "${result['plantName']}".tr(),
+                                      style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.black),
+                                    ),
+                                  ],
                                 ),
                                 subtitle: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -156,16 +162,31 @@ class ArchiveScreen extends StatelessWidget {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Expanded(
-                                          child: Text(
-                                            "🦠 Disease: ${result['diseaseName']}",
-                                            style: TextStyle(
-                                              color: result['diseaseName'].toString().toLowerCase().contains("healthy")
-                                                  ? Colors.green
-                                                  : Colors.red,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                "🦠 ${"Disease".tr()}: ",
+                                                style: TextStyle(
+                                                  color: result['diseaseName'].toString().toLowerCase().contains("healthy")
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                              Text(
+                                                "${result['diseaseName']}".tr(),
+                                                style: TextStyle(
+                                                  color: result['diseaseName'].toString().toLowerCase().contains("healthy")
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                                maxLines: 2,
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                            ],
                                           ),
                                         ),
                                         const SizedBox(width: 10),
@@ -177,10 +198,9 @@ class ArchiveScreen extends StatelessWidget {
                                       ],
                                     ),
 
-
                                     const SizedBox(height: 4),
                                     Text(
-                                      "📅 Date: ${_parseTimestamp(result['timestamp'])}",
+                                      "📅 ${"Date".tr()}: ${_parseTimestamp(result['timestamp'])}",
                                       style: const TextStyle(color: Colors.grey),
                                     ),
                                     if (result.containsKey('link') && result['link'].toString().isNotEmpty)
@@ -193,52 +213,38 @@ class ArchiveScreen extends StatelessWidget {
                                               await launchUrl(url);
                                             } else {
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(content: Text("Could not open link.")),
+                                                SnackBar(content: Text("Could not open link.".tr())),
                                               );
                                             }
                                           },
                                           child: Text(
-                                            "🌐 View More",
+                                            "🌐 View More".tr(),
                                             style: TextStyle(color: Colors.blue[700], decoration: TextDecoration.underline),
                                           ),
                                         ),
                                       ),
                                   ],
                                 ),
-                                // trailing: IconButton(
-                                //   icon: const Icon(Icons.delete_forever, color: Colors.red),
-                                //   onPressed: () async {
-                                //     await diseaseProvider.deleteArchivedResult(index);
-                                //     ScaffoldMessenger.of(context).showSnackBar(
-                                //       const SnackBar(content: Text("Deleted from archive")),
-                                //     );
-                                //   },
-                                // ),
                               ),
                             );
                           }).toList(),
                         );
-
                       }
                     },
                   ),
-
-
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
-            // --- قسم عرض الأسمدة ---
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  "Fertilizers:",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
-                ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Row(
+                children: [
+                  Text(
+                    "Fertilizers:".tr(),
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color(0xFF438853)),
+                  ),
+                ],
               ),
             ),
             const SizedBox(height: 10),
@@ -276,7 +282,6 @@ class ArchiveScreen extends StatelessWidget {
     );
   }
 
-  // ✅ دالة لتنسيق التاريخ حسب نوعه (String أو int)
   static String _parseTimestamp(dynamic timestamp) {
     try {
       if (timestamp is String) {
@@ -284,10 +289,10 @@ class ArchiveScreen extends StatelessWidget {
       } else if (timestamp is int) {
         return DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal().toShortDateString();
       } else {
-        return "Invalid timestamp";
+        return "Invalid timestamp".tr();
       }
     } catch (e) {
-      return "Error parsing date";
+      return "Error parsing date".tr();
     }
   }
 
@@ -297,7 +302,7 @@ class ArchiveScreen extends StatelessWidget {
         final url = Uri.parse(fertilizer.link);
         if (!await launchUrl(url)) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text("Could not open link for ${fertilizer.name}")),
+            SnackBar(content: Text("Could not open link for ${fertilizer.name}".tr())),
           );
         }
       },
@@ -356,7 +361,6 @@ class ArchiveScreen extends StatelessWidget {
   }
 }
 
-// ✅ امتداد لتنسيق التاريخ
 extension DateTimeExtension on DateTime {
   String toShortDateString() {
     return '${year}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')} ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';

@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'dart:io'; // أضف هذا الاستيراد
+import 'package:easy_localization/easy_localization.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart'; // أضف هذا الاستيراد
@@ -39,7 +40,7 @@ Future<void> chooseImageFromGallery() async {
       if (fileLength == 0) {
         log("Copied image file is empty!");
         ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-          const SnackBar(content: Text("Selected image is empty or corrupted.")),
+           SnackBar(content: Text("Selected image is empty or corrupted.").tr()),
         );
         return;
       }
@@ -62,7 +63,7 @@ Future<void> chooseImageFromGallery() async {
   } else {
     log("User canceled the picker or no file selected.");
     ScaffoldMessenger.of(navigatorKey.currentContext!).showSnackBar(
-      const SnackBar(content: Text("No image selected.")),
-    );
+       SnackBar(content: Text("No image selected.".tr()),
+    ));
   }
 }

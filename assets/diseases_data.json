@@ -1,0 +1,266 @@
+{
+  "Apple Scab": {
+    "remedies": [
+      "Apply approved fungicides (e.g., captan, myclobutanil).",
+      "Remove and destroy fallen leaves and infected fruit."
+    ],
+    "prevention": [
+      "Plant resistant varieties.",
+      "Prune trees to improve air circulation."
+    ],
+    "link": "https://www.givinggrove.org/apple-scab?gad_source=1&gad_campaignid=22634804536&gbraid=0AAAAAByrnoXK4lulTmGkk_x2XaNfOnDV7&gclid=Cj0KCQjwpf7CBhCfARIsANIETVrJ5nWVwD0xcsJw-lt-NW39bz0rJbmQ9huK_8g-yxQzIfQysFo7KosaAhk6EALw_wcB"
+  },
+  "Apple Black Rot": {
+    "remedies": [
+      "Prune and remove mummified fruit and cankers.",
+      "Apply fungicides during early season if needed."
+    ],
+    "prevention": [
+      "Remove infected debris.",
+      "Prune for better airflow."
+    ],
+    "link": "https://extension.umn.edu/plant-diseases/black-rot-apple"
+  },
+  "Cedar Apple Rust": {
+    "remedies": [
+      "Apply fungicides at bud break and early fruit development.",
+      "Remove nearby junipers if possible."
+    ],
+    "prevention": [
+      "Plant resistant cultivars.",
+      "Prune infected twigs and galls from junipers."
+    ],
+    "link": "https://www.givinggrove.org/cedar-apple-rust?gad_source=1&gad_campaignid=22634804536&gbraid=0AAAAAByrnoXK4lulTmGkk_x2XaNfOnDV7&gclid=Cj0KCQjwpf7CBhCfARIsANIETVqTRYVMBWhYEQoCsXCba8K9zIasuczFsyEDSUyNmYIwzHt9-EmesKwaAjKXEALw_wcB"
+  },
+  "Cherry Powdery Mildew": {
+    "remedies": [
+      "Use sulfur or other approved fungicides.",
+      "Prune and remove infected shoots."
+    ],
+    "prevention": [
+      "Plant resistant varieties.",
+      "Promote air circulation with pruning."
+    ],
+    "link": "https://www.givinggrove.org/powdery-mildew?gad_source=1&gad_campaignid=22634804536&gbraid=0AAAAAByrnoXK4lulTmGkk_x2XaNfOnDV7&gclid=Cj0KCQjwpf7CBhCfARIsANIETVopPhF8kl0PLMnKZLXiKQOFGTFf6BqIsUrN6p8l_fhXiqfd9Q-p1wwaAox8EALw_wcB"
+  },
+  "Corn Cercospora Leaf Spot": {
+    "remedies": [
+      "Apply fungicides such as azoxystrobin.",
+      "Remove infected leaves."
+    ],
+    "prevention": [
+      "Use resistant hybrids.",
+      "Practice crop rotation."
+    ],
+    "link": "https://www.gardenia.net/disease/cercospora-leaf-spot"
+  },
+  "Corn Common Rust": {
+    "remedies": [
+      "Apply fungicides if rust severity is high.",
+      "Remove infected debris."
+    ],
+    "prevention": [
+      "Grow resistant varieties.",
+      "Rotate crops."
+    ],
+    "link": "https://extension.umn.edu/corn-pest-management/common-rust-corn"
+  },
+  "Corn Northern Leaf Blight": {
+    "remedies": [
+      "Use fungicides if risk is high.",
+      "Plow under crop residue to reduce overwintering."
+    ],
+    "prevention": [
+      "Plant resistant hybrids.",
+      "Rotate crops."
+    ],
+    "link": "https://www.pioneer.com/us/agronomy/Managing-Northern-Corn-Leaf-Blight.html"
+  },
+  "Grape Black Rot": {
+    "remedies": [
+      "Prune infected canes and remove mummified berries.",
+      "Apply fungicides if needed."
+    ],
+    "prevention": [
+      "Use resistant grape cultivars.",
+      "Prune for better airflow."
+    ],
+    "link": "https://extension.psu.edu/black-rot-on-grapes-in-home-gardens"
+  },
+  "Grape Black Measles": {
+    "remedies": [
+      "Prune infected canes and dispose properly.",
+      "Use fungicides for Esca complex if needed."
+    ],
+    "prevention": [
+      "Avoid trunk wounds.",
+      "Use good pruning hygiene."
+    ],
+    "link": "https://ipm.ucanr.edu/agriculture/grape/esca-black-measles/#gsc.tab=0"
+  },
+  "Grape Isariopsis Leaf Spot": {
+    "remedies": [
+      "Apply fungicides labeled for leaf spot.",
+      "Remove fallen leaves."
+    ],
+    "prevention": [
+      "Prune to improve airflow.",
+      "Use resistant cultivars if available."
+    ],
+    "link": "https://www.sciencedirect.com/science/article/abs/pii/S0261219414001598"
+  },
+  "Peach Bacterial Spot": {
+    "remedies": [
+      "Apply copper-based sprays.",
+      "Remove infected material."
+    ],
+    "prevention": [
+      "Use resistant cultivars.",
+      "Avoid overhead irrigation."
+    ],
+    "link": "https://www.aces.edu/blog/topics/crop-production/bacterial-spot-treatment-in-peaches/"
+  },
+  "Pepper Bell Bacterial Spot": {
+    "remedies": [
+      "Apply copper-based sprays.",
+      "Remove infected material."
+    ],
+    "prevention": [
+      "Use resistant cultivars.",
+      "Avoid overhead irrigation."
+    ],
+    "link": "https://extension.wvu.edu/lawn-gardening-pests/plant-disease/fruit-vegetable-diseases/bacterial-leaf-spot-of-pepper"
+  },
+  "Potato Early Blight": {
+    "remedies": [
+      "Apply fungicides like chlorothalonil if needed.",
+      "Remove and destroy infected leaves."
+    ],
+    "prevention": [
+      "Rotate crops.",
+      "Mulch to reduce soil splash."
+    ],
+    "link": "https://www.cropscience.bayer.us/articles/cp/early-blight-potatoes"
+  },
+  "Potato Late Blight": {
+    "remedies": [
+      "Apply fungicides at first signs.",
+      "Destroy infected plants immediately."
+    ],
+    "prevention": [
+      "Use certified seed potatoes.",
+      "Avoid overhead watering."
+    ],
+    "link": "https://ipm.ucanr.edu/agriculture/potato/late-blight/#gsc.tab=0"
+  },
+  "Strawberry Leaf Scorch": {
+    "remedies": [
+      "Remove and destroy infected leaves.",
+      "Apply fungicides if recommended locally."
+    ],
+    "prevention": [
+      "Proper irrigation to reduce stress.",
+      "Improve airflow with spacing."
+    ],
+    "link": "https://content.ces.ncsu.edu/leaf-scorch-of-strawberry"
+  },
+  "Tomato Bacterial Spot": {
+    "remedies": [
+      "Apply copper sprays as needed.",
+      "Remove infected material."
+    ],
+    "prevention": [
+      "Use resistant cultivars.",
+      "Avoid overhead watering."
+    ],
+    "link": "https://hort.extension.wisc.edu/articles/bacterial-spot-of-tomato/"
+  },
+  "Tomato Early Blight": {
+    "remedies": [
+      "Apply fungicides like chlorothalonil if needed.",
+      "Remove and destroy infected leaves."
+    ],
+    "prevention": [
+      "Rotate crops.",
+      "Mulch to reduce soil splash."
+    ],
+    "link": "https://extension.umd.edu/resource/early-blight-tomatoes"
+  },
+  "Tomato Late Blight": {
+    "remedies": [
+      "Apply fungicides at first signs.",
+      "Destroy infected plants immediately."
+    ],
+    "prevention": [
+      "Use certified seeds.",
+      "Avoid overhead watering."
+    ],
+    "link": "https://content.ces.ncsu.edu/tomato-late-blight"
+  },
+  "Tomato Leaf Mold": {
+    "remedies": [
+      "Use fungicides like chlorothalonil or copper sprays.",
+      "Remove infected leaves."
+    ],
+    "prevention": [
+      "Space plants properly.",
+      "Avoid overhead watering."
+    ],
+    "link": "https://extension.umn.edu/disease-management/tomato-leaf-mold"
+  },
+  "Tomato Septoria Leaf Spot": {
+    "remedies": [
+      "Apply fungicides such as chlorothalonil.",
+      "Remove affected leaves."
+    ],
+    "prevention": [
+      "Rotate crops.",
+      "Mulch to reduce soil splash."
+    ],
+    "link": "https://www.missouribotanicalgarden.org/gardens-gardening/your-garden/help-for-the-home-gardener/advice-tips-resources/insects-pests-and-problems/diseases/fungal-spots/septoria-leaf-spot-of-tomato"
+  },
+  "Tomato Spider Mites": {
+    "remedies": [
+      "Spray plants with water to dislodge mites.",
+      "Use miticides if severe."
+    ],
+    "prevention": [
+      "Keep plants properly watered.",
+      "Encourage natural predators like ladybugs."
+    ],
+    "link": "https://growtomatoeseasily.com/preventing-spider-mites-on-tomato-plants/"
+  },
+  "Tomato Target Spot": {
+    "remedies": [
+      "Use fungicides such as chlorothalonil.",
+      "Remove infected leaves."
+    ],
+    "prevention": [
+      "Rotate crops.",
+      "Ensure good air circulation."
+    ],
+    "link": "https://www.vegetables.bayer.com/ca/en-ca/resources/agronomic-spotlights/target-spot-of-tomato.html"
+  },
+  "Tomato Yellow Leaf Curl Virus": {
+    "remedies": [
+      "Remove infected plants immediately.",
+      "Control whiteflies with insecticides."
+    ],
+    "prevention": [
+      "Use resistant varieties.",
+      "Use row covers to keep whiteflies away."
+    ],
+    "link": "https://ipm.ifas.ufl.edu/agricultural_ipm/tylcv_home_mgmt.shtml"
+  },
+  "Tomato Mosaic Virus": {
+    "remedies": [
+      "Remove infected plants immediately.",
+      "Disinfect tools and hands."
+    ],
+    "prevention": [
+      "Use resistant varieties.",
+      "Avoid smoking near plants; tobacco can spread the virus."
+    ],
+    "link": "https://blogs.ifas.ufl.edu/stlucieco/2023/03/03/tomato-mosaic-virus-tomv-and-its-management/"
+  }
+}

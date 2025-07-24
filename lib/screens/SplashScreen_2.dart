@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+import '../main_screens.dart';
 import 'on_boarding_screen.dart';
 
 class Splashscreen2 extends StatefulWidget {
@@ -27,7 +29,6 @@ class _SplashScreen2State extends State<Splashscreen2> with TickerProviderStateM
   void initState() {
     super.initState();
 
-    // logo animation
     _logoController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -59,12 +60,10 @@ class _SplashScreen2State extends State<Splashscreen2> with TickerProviderStateM
 
     _logoController.forward();
 
-    // delay a bit before starting text animation
     Future.delayed(const Duration(milliseconds: 1000), () {
       setState(() {
         showText = true;
       });
-
       _textController.forward();
     });
 
@@ -77,12 +76,22 @@ class _SplashScreen2State extends State<Splashscreen2> with TickerProviderStateM
       });
     });
 
-    // Navigate to onboarding screen
-    Future.delayed(const Duration(milliseconds: 3000), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const OnboardingScreen()),
-      );
+    // انتظر 3 ثواني، ثم قرر على أي شاشة نروح
+    Future.delayed(const Duration(milliseconds: 3000), () async {
+      final prefs = await SharedPreferences.getInstance();
+      final seenOnboarding = prefs.getBool('onboardingSeen') ?? false;
+
+      if (seenOnboarding) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const MainScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const OnboardingScreen()),
+        );
+      }
     });
   }
 
@@ -98,7 +107,6 @@ class _SplashScreen2State extends State<Splashscreen2> with TickerProviderStateM
     String visibleText = fullText.substring(0, currentLength);
 
     return Scaffold(
-      //backgroundColor: Colors.white,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

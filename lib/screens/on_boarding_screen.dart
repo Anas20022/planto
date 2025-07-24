@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../main_screens.dart';
 import '../providers/mode_provider.dart';
@@ -112,12 +113,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 40.0),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (currentPage == onboardingData.length - 1) {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('onboardingSeen', true); // ✅ سجل أنه شافها
+
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const MainScreen()),
+                      MaterialPageRoute(builder: (context) => const MainScreen()),
                     );
                   } else {
                     _pageController.nextPage(
@@ -125,7 +128,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       curve: Curves.easeInOut,
                     );
                   }
-                },
+                }
+                ,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF438853),
                   padding: const EdgeInsets.symmetric(vertical: 16),

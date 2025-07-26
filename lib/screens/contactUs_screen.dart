@@ -8,7 +8,13 @@ class ContactUsScreen extends StatelessWidget {
 
   // فتح الرابط
   Future<void> _launchUrl(String url) async {
-    final Uri uri = Uri.parse(url);
+    final Uri uri;
+    if (url == "aalamrin@students.iugaza.edu.ps"){
+      uri = Uri(
+        scheme: 'mailto',
+        path: url,
+      );
+    }else uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw Exception('Could not launch $url');
     }
@@ -131,6 +137,7 @@ class ContactUsScreen extends StatelessWidget {
     final Color backgroundColor =
     isDark ? const Color(0xFF121226) : const Color(0xFFCFFAD3);
 
+
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -159,14 +166,14 @@ class ContactUsScreen extends StatelessWidget {
                   icon: Icons.call,
                   labelKey: "call_us",
                   subtitleKey: "working_hours",
-                  onTap: () => _launchUrl("tel:+1234567890"),
+                  onTap: () => _launchUrl("tel:+972567070887"),
                   context: context,
                 ),
                 buildContactButton(
                   icon: Icons.email,
                   labelKey: "email_us",
                   subtitleKey: "working_hours",
-                  onTap: () => _launchUrl("mailto:test@example.com"),
+                  onTap: () => _launchUrl("aalamrin@students.iugaza.edu.ps"),
                   context: context,
                 ),
               ],
@@ -182,35 +189,35 @@ class ContactUsScreen extends StatelessWidget {
               icon: FontAwesomeIcons.instagram,
               titleKey: "instagram",
               subtitleKey: "instagram_desc",
-              onTap: () => _launchUrl("https://instagram.com/flutter.dev"),
+              onTap: () => _launchUrl("https://www.instagram.com/houseplusplant/?hl=ar"),
               context: context,
             ),
             buildSocialCard(
               icon: FontAwesomeIcons.telegram,
               titleKey: "telegram",
               subtitleKey: "telegram_desc",
-              onTap: () => _launchUrl("https://t.me/flutterdev"),
+              onTap: () => _launchUrl("https://t.me/abood_3am"),
               context: context,
             ),
             buildSocialCard(
               icon: FontAwesomeIcons.facebook,
               titleKey: "facebook",
               subtitleKey: "facebook_desc",
-              onTap: () => _launchUrl("https://facebook.com/flutterdev"),
+              onTap: () => _launchUrl("https://www.facebook.com/bdallhahmd.850998"),
               context: context,
             ),
             buildSocialCard(
               icon: FontAwesomeIcons.whatsapp,
               titleKey: "whatsapp",
               subtitleKey: "working_hours",
-              onTap: () => _launchUrl("https://wa.me/1234567890"),
+              onTap: () => _launchUrl("https://wa.me/+201070831238"),
               context: context,
             ),
             buildSocialCard(
               icon: FontAwesomeIcons.youtube,
               titleKey: "youtube",
               subtitleKey: "youtube_desc",
-              onTap: () => _launchUrl("https://youtube.com/flutterdev"),
+              onTap: () => _launchUrl("https://www.youtube.com/@DrPlantsss"),
               context: context,
             ),
             buildSocialCard(
@@ -218,7 +225,7 @@ class ContactUsScreen extends StatelessWidget {
               titleKey: "location",
               subtitleKey: "location_desc",
               onTap: () => _launchUrl(
-                  "https://www.google.com/maps?q=Amman+Jordan"),
+                  "https://www.google.com/maps?q=Gaza+Palestine+"),
               context: context,
             ),
             const SizedBox(height: 20),

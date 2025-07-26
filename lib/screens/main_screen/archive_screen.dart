@@ -75,7 +75,6 @@ class ArchiveScreen extends StatelessWidget {
                                               title: Text("View details".tr()),
                                               onTap: () async {
                                                 Navigator.pop(context);
-
                                                 final diseaseName = result['diseaseName']?.toString() ?? "";
                                                 final accuracy = result['accuracy'] ?? 0.0;
 

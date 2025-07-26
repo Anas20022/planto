@@ -190,7 +190,7 @@ class DiseaseProvider with ChangeNotifier {
         // 👉 إلى هنا واصل فقط إن كانت النتيجة حقيقية مع دقة جيدة
         await saveLastAnalysisResult(plantName, detectedDiseaseName, confidence);
 
-        final diseaseInfo = await loadDiseaseData(detectedDiseaseName); // <<<<<< هذا السطر ما يشتغل إلا لما نكون متأكدين
+        final diseaseInfo = await loadDiseaseData(detectedDiseaseName); //  <<<<<< هذا السطر ما يشتغل إلا لما نكون متأكدين
 
         return DiseaseDetails(
           plantName: plantName,

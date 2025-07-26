@@ -20,7 +20,7 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen> {
   late List<CameraDescription> cameras;
   Camera chosenCamera = Camera.backCamera;
-  late CameraController _controller;
+  CameraController? _controller; // ✅ made nullable
 
   Future<void> _initCameraController(CameraDescription cameraDescription) async {
     log("started");
@@ -30,18 +30,18 @@ class _CameraScreenState extends State<CameraScreen> {
       enableAudio: false,
     );
 
-    _controller.addListener(() {
+    _controller!.addListener(() {
       if (mounted) {
         setState(() {});
       }
 
-      if (_controller.value.hasError) {
-        log('Camera error: ${_controller.value.errorDescription}');
+      if (_controller!.value.hasError) {
+        log('Camera error: ${_controller!.value.errorDescription}');
       }
     });
 
     try {
-      await _controller.initialize();
+      await _controller!.initialize();
     } on CameraException catch (e) {
       log('Error initializing camera: $e');
     }
@@ -68,8 +68,7 @@ class _CameraScreenState extends State<CameraScreen> {
           '${(await getTemporaryDirectory()).path}/${DateTime.now()}.png';
       log("Navigating to ImagePreview with image path: $imagePath");
 
-
-      var picture = await _controller.takePicture();
+      var picture = await _controller!.takePicture();
       picture.saveTo(imagePath);
 
       log("Photo saved at: $imagePath");
@@ -80,11 +79,6 @@ class _CameraScreenState extends State<CameraScreen> {
           builder: (context) => ImagePreview(imagePath: imagePath),
         ),
       );
-
-      // DiseaseProvider.detectDisease(imagePath).then((value) {
-      //   log("Detected value: $value");
-      // });
-
     } catch (e) {
       log('Error capturing photo: $e');
     }
@@ -105,15 +99,18 @@ class _CameraScreenState extends State<CameraScreen> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose(); // ✅ null-safe dispose
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return const Center(
-        child: CircularProgressIndicator(),
+    if (_controller == null || !_controller!.value.isInitialized) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
       );
     }
 
@@ -135,7 +132,7 @@ class _CameraScreenState extends State<CameraScreen> {
                 padding: const EdgeInsets.only(top: 80),
                 child: Transform.scale(
                   scale: 1,
-                  child: CameraPreview(_controller), // Camera Preview
+                  child: CameraPreview(_controller!), // ✅ null-safe access
                 ),
               ),
               Align(

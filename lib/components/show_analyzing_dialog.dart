@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
@@ -21,7 +22,7 @@ Future<void> showAnalyzingDialog(BuildContext context) async {
               ),
               const SizedBox(height: 20),
               Text(
-                'Analyzing the plant...',
+                'Analyzing the plant...'.tr(),
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -29,8 +30,8 @@ Future<void> showAnalyzingDialog(BuildContext context) async {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                'This might take a few seconds',
+               Text(
+                'This might take a few seconds'.tr(),
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
             ],

@@ -128,50 +128,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Widget buildSwitchIcon(BuildContext context) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 20),
-  //     child: ElevatedButton(
-  //       onPressed: () {
-  //         context.read<DiseaseProvider>().toggleServer();
-  //       },
-  //       style: ElevatedButton.styleFrom(
-  //         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-  //         backgroundColor: const Color(0xFF438853),
-  //         shape: RoundedRectangleBorder(
-  //           borderRadius: BorderRadius.circular(15),
-  //         ),
-  //       ),
-  //       child: Selector<DiseaseProvider, bool>(
-  //         selector: (_, provider) => provider.offline,
-  //         builder: (_, offline, __) => Row(
-  //           mainAxisSize: MainAxisSize.min,
-  //           children: [
-  //             Icon(
-  //               offline ? Icons.cloud_off_rounded : Icons.cloud_outlined,
-  //               color: Colors.white,
-  //             ),
-  //             const SizedBox(width: 10),
-  //             Text(
-  //               offline ? "Offline" : "Cloud",
-  //               style: const TextStyle(color: Colors.white),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-  //
-  // Padding buildHeading() {
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 20, bottom: 20),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [],
-  //     ),
-  //   );
-  // }
 
   SizedBox buildMenu1(BuildContext context) {
     return SizedBox(
@@ -281,39 +237,6 @@ class HomeScreen extends StatelessWidget {
       }).toList(),
     );
   }
-
-
-  // SizedBox buildMenu2(BuildContext context) {
-  //   return SizedBox(
-  //     height: 180,
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-  //       children: [
-  //         MenuItem(
-  //             text: "Latest Fertilizers",
-  //             icon: Icons.newspaper,
-  //             onPressed: () {
-  //               Navigator.of(context).push(
-  //                 MaterialPageRoute(
-  //                   builder: (context) => const ArchiveScreen(),
-  //                 ),
-  //               );
-  //             }),
-  //         const SizedBox(width: 20),
-  //         MenuItem(
-  //             text: "Feedback",
-  //             icon: Icons.question_answer_rounded,
-  //             onPressed: () {
-  //               Navigator.of(context).push(
-  //                 MaterialPageRoute(
-  //                   builder: (context) => const   FeedbackScreen(),
-  //                 ),
-  //               );
-  //             }),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget buildPlantTipCard(BuildContext context) {
     final randomTip = context.watch<TipProvider>().randomTip;

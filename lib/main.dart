@@ -45,6 +45,7 @@ void main() async {
         supportedLocales: [Locale('en'), Locale('ar')],
         path: 'assets/langs',
         fallbackLocale: Locale('en'),
+        startLocale: Locale('en'), // ✅ أضف هذا السطر
         child: MultiProvider(providers: [
         ChangeNotifierProvider(create: (_) => DiseaseProvider()),
         ChangeNotifierProvider(create: (_) => BottomNavProvider()),

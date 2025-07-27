@@ -8,6 +8,7 @@ import '../../common/image_picker.dart';
 import '../../components/menu_item.dart';
 import '../../model/plant_model.dart';
 import '../../providers/disease_provider.dart';
+import '../../providers/mode_provider.dart';
 import '../../providers/plant_selection_provider.dart';
 import '../../providers/tip_provider.dart';
 import '../camera_screen.dart';
@@ -156,7 +157,7 @@ class HomeScreen extends StatelessWidget {
               }),
           const SizedBox(width: 20),
           MenuItem(
-              text: "Scan for Disease".tr(),
+              text: "Camera Scan".tr(),
               icon: Icons.camera_enhance_rounded,
               onPressed: () {
                 // تحقق إذا كان قد تم تحديد نبتة
@@ -206,6 +207,7 @@ class HomeScreen extends StatelessWidget {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
+
                   color: isSelected ? Color(0xFF438853) : Colors.white, // تغيير اللون عند التحديد
                   shape: BoxShape.circle,
                   boxShadow: [
@@ -226,7 +228,8 @@ class HomeScreen extends StatelessWidget {
                 plant.name.tr(),
                 style: TextStyle(
                   fontSize: 12,
-                  color: isSelected ? Colors.white : Color(0xFF438853), // تغيير النص حسب التحديد
+                  color: isSelected ? Color(0xFF438853) :  Provider.of<ModeProvider>(context).darkModeEnable?Colors.white:Colors.black,
+                  // color: isSelected ? Colors.white : Color(0xFF438853), // تغيير النص حسب التحديد
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,

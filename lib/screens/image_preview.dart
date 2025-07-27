@@ -175,6 +175,7 @@ class ImagePreview extends StatelessWidget {
                         }
                       }
 
+
                       ,
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.white,
